@@ -1,24 +1,30 @@
+![Velox Linux](images/darkmateria.png)
 
+# Velox Linux
+
+> **Shape it. Race it. Own it.**
+
+---
 
 ## Overview
 
-**KIRO** is a personal Arch Linux ISO builder that creates fully customized installation media using the official ArchISO toolchain. KIRO produces reproducible builds with pre-configured packages, desktop environments, system optimizations, and custom configurations baked in.
+**Velox Linux** is a personal Arch Linux ISO builder that creates fully customized installation media using the official ArchISO toolchain. Velox produces reproducible builds with pre-configured packages, desktop environments, system optimizations, and custom configurations baked in.
 
-KIRO is designed with specific preferences in mind:
+Velox Linux is designed with specific preferences in mind:
 
 - **Boot Method**: UEFI with systemd-boot
 - **Filesystem**: ext4
 - **Display Manager**: SDDM with custom theming
-- **Desktop Environments**: XFCE4 + Ohmychadwm
+- **Desktop Environment**: KDE Plasma
 - **Philosophy**: Free and open-source software
 
 ---
 
 ## Quick Start
 
-Download the latest KIRO ISO from [SourceForge](https://sourceforge.net/projects/kiro/files/).
+Download the latest Velox Linux ISO from [SourceForge](#).
 
-Want to build your own? See [Building KIRO](#building-kiro) below.
+Want to build your own? See [Building Velox](#building-velox) below.
 
 ---
 
@@ -27,17 +33,16 @@ Want to build your own? See [Building KIRO](#building-kiro) below.
 - **Reproducible Builds** — Script-driven, consistent ISO creation
 - **Highly Customizable** — Easy to add/remove packages and modify configurations
 - **Modern Defaults** — UEFI, systemd, systemd-oomd, performance optimizations
-- **Multiple Desktop Environments** — XFCE4 + Ohmychadwm
+- **KDE Plasma** — Full-featured, modern desktop environment
 - **Pre-configured** — Ready-to-use after installation with Calamares
 - **Performance Tuned** — Intelligent task scheduling, memory optimization, system monitoring
-- **Educational Foundation** — Comprehensive customization examples and best practices
 - **Custom Repository Support** — Chaotic AUR and personal repositories
 
 ---
 
 ## What's Included
 
-KIRO comes pre-loaded with:
+Velox Linux comes pre-loaded with:
 
 - **System Tools**: Package management, filesystem utilities, boot loaders (GRUB, systemd-boot, rEFInd)
 - **Network**: NetworkManager, VPN support, SSH, wireless tools
@@ -45,11 +50,11 @@ KIRO comes pre-loaded with:
 - **Media Support**: VLC, FFmpeg, GStreamer with full codec support
 - **Development Tools**: Git, build essentials, development libraries
 - **Optimizations**: ananicy-cpp task scheduling, systemd-oomd memory management, tuned performance profiles
-- **Customization**: Curated fonts, icons, themes, and shell configurations from Nemesis repo
+- **Customization**: Curated fonts, icons, themes, and shell configurations
 
 ---
 
-## Building KIRO
+## Building Velox
 
 ### Requirements
 
@@ -68,7 +73,7 @@ bash change-version.sh
 cd build-scripts && bash build-the-iso.sh
 ```
 
-Build output lands in `~/kiro-Out/`. Checksums (sha1, sha256, md5) and a package list are generated alongside the ISO.
+Build output lands in `~/velox-Out/`. Checksums (sha1, sha256, md5) and a package list are generated alongside the ISO.
 
 ### NVIDIA Driver Selection
 
@@ -82,15 +87,14 @@ nvidia_driver="390xx"   # nvidia-390xx-dkms — older legacy
 
 ### Adding a Personal Local Repo
 
-See the commented `[personal_repo]` block in `archiso/pacman.conf` and the tutorial:
-[Adding a personal local repo to the ISO build](https://www.youtube.com/watch?v=TqFuLknCsUE)
+See the commented `[personal_repo]` block in `archiso/pacman.conf`.
 
 ---
 
 ## Project Structure
 
 ```
-kiro-iso/
+velox-iso/
 ├── archiso/                    # Core ISO build configuration
 │   ├── airootfs/               # Root filesystem overlay (lands at / on live ISO)
 │   │   ├── etc/                # System config (pacman, NM, locale, polkit, modprobe)
@@ -140,12 +144,11 @@ kiro-iso/
 
 #### Display & Desktop
 
-- **Display Manager**: SDDM with custom themes (multiple variants)
-- **Primary DE**: XFCE4 with extensive customization
-- **Window Manager**: Ohmychadwm (tiling WM with integrated menu system)
-- **Themes**: Arc GTK (with Dawn/Mint variants), Neo-Candy collection
-- **Icons**: Numix, Sardi, Surfn, Candy Icons
-- **Cursors**: Bibata, Vimix, Beautyline
+- **Display Manager**: SDDM with Breeze theme
+- **Desktop Environment**: KDE Plasma
+- **Window Manager**: KWin (Wayland + X11)
+- **Icons**: Breeze icon theme
+- **Cursors**: Breeze cursors
 
 ### Package Categories
 
@@ -159,7 +162,6 @@ kiro-iso/
 #### Installation & System Recovery
 
 - **Calamares**: Modern graphical installer with modular architecture
-- **kiro-calamares-config**: Custom Calamares modules and workflows
 - **Recovery Tools**: `clonezilla`, `fsarchiver`, `partclone`, `gparted`
 - **Disk Utilities**: `parted`, `gptfdisk`, `fdisk`, `testdisk`
 
@@ -176,14 +178,14 @@ kiro-iso/
 - **Browsers**: Firefox, Chromium, Vivaldi
 - **Media**: VLC, FFmpeg, GStreamer (with all plugins)
 - **Graphics**: GIMP, Inkscape, ImageMagick, Nomacs
-- **Development**: VSCode, Sublime Text, Git, meld, build-essential
-- **Communication**: Signal Desktop, Shortwave
-- **Utilities**: qBittorrent, yt-dlp, Simple Scan, file-roller
+- **Development**: VSCode, Sublime Text, Git, meld
+- **Communication**: Signal Desktop
+- **Utilities**: qBittorrent, yt-dlp, Simple Scan, Ark
 
 #### Audio & Video
 
-- **Audio**: PulseAudio, ALSA, pavucontrol
-- **Bluetooth**: Bluez, Blueberry (manager)
+- **Audio**: PipeWire, WirePlumber, pavucontrol
+- **Bluetooth**: Bluez, Bluedevil (KDE manager)
 - **Video**: Mesa (open-source), NVIDIA open drivers
 - **Codecs**: gst-libav, libdvdcss, complete GStreamer plugin suite
 
@@ -196,25 +198,17 @@ kiro-iso/
 #### AUR & Custom Repositories
 
 - **Chaotic AUR**: Precompiled packages from Arch User Repository
-- **Nemesis Repository** (custom): Educational configurations and customizations
-  - `edu-dot-files-git`: Pre-configured shell and application settings
-  - `edu-xfce-git`: XFCE4 customization package
-  - `edu-shells-git`: Custom shell configurations
-  - `edu-rofi-git` + `edu-rofi-themes-git`: Application launcher with themes
-  - `edu-polybar-git`: Custom status bar
-  - `ohmychadwm-git`: Tiling window manager with integrated menu
-  - `edu-variety-config-git`: Wallpaper manager presets
 - **AUR Helpers**: `paru-git`, `yay-git`
 - **Utilities**: `downgrade` (package downgrading)
 
 ### Custom Repository
 
-KIRO packages are available via:
+Velox packages are available via:
 
 ```ini
-[kiro_repo]
+[velox_repo]
 SigLevel = Never
-Server = https://kirodubes.github.io/$repo/$arch
+Server = https://thelinutubetltos.github.io/$repo/$arch
 ```
 
 ---
@@ -228,11 +222,11 @@ See [CHANGELOG.md](CHANGELOG.md) for the full project history.
 ## Resources
 
 - **Arch Wiki**: [ArchISO](https://wiki.archlinux.org/title/Archiso)
-- **KIRO Video Series**: [YouTube Playlist](https://www.youtube.com/watch?v=3jdKH6bLgUE&list=PLlloYVGq5pS71UubmlKjjw131PjixMIjW)
-- **Related Project**: [BUILDRA](https://github.com/buildra) — A derivative project based on KIRO
+- **Kiro Video Series** (upstream): [YouTube Playlist](https://www.youtube.com/watch?v=3jdKH6bLgUE&list=PLlloYVGq5pS71UubmlKjjw131PjixMIjW)
+- **Based on**: [Kiro](https://github.com/kirodubes/kiro-iso) by Erik Dubois
 
 ---
 
 ## License
 
-KIRO is built on open-source tools and components. Refer to individual package licenses for details.
+Velox Linux is built on open-source tools and components. Refer to individual package licenses for details.
