@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2034
 
-iso_name="kiro"
-iso_label="kiro-v26.05.22"
-iso_publisher="kiro"
-iso_application="Kiro Live/Rescue CD"
-iso_version="v26.05.22"
+iso_name="velox"
+iso_label="VELOX_$(date +%Y%m)"
+iso_publisher="Velox Linux <https://github.com/thelinuxtubetltos/velox-iso>"
+iso_application="Velox Linux Live/Rescue DVD"
+iso_version="v1.0"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('bios.syslinux'

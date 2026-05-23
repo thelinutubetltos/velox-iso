@@ -168,8 +168,7 @@ nvidia-settings
 ###base-devel
 base-devel
 
-###virtual box or vmware
-virtualbox-guest-utils
+
 
 ###packages for dual boot
 os-prober
@@ -248,7 +247,6 @@ poppler-qt5
 
 ###applications
 chromium
-dmenu
 firefox
 galculator
 gcolor3
@@ -296,9 +294,6 @@ evince
 expac
 file-roller
 git
-gnome-disk-utility
-gnome-keyring
-gnome-screenshot
 gparted
 gpick
 hardinfo2
@@ -393,9 +388,25 @@ sddm-git
 ###########################################################################
 ####                           DESKTOP MANAGERS
 ###########################################################################
+base
+base-devel
+networkmanager
+plasma-desktop
+plasma-nm
+plasma-pa
+plasma-systemmonitor
+kwin
+konsole
+dolphin
+kate
+ark
+spectacle
+sddm
+xorg-server
+plasma-wayland-session
+pipewire
+wireplumber
 
-xfce4
-xfce4-goodies
 
 ###########################################################################
 ####                       APPS
@@ -496,8 +507,6 @@ xcolor
 ###########################################################################
 
 alacritty
-#edu-chadwm-git
-ohmychadwm-git
 fastcompmgr-git
 feh
 gcc

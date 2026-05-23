@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 ############################################################
-# Author    : Erik Dubois
-# Website   : https://www.erikdubois.be
+# Author    : Your Name
+# Website   : https://github.com/YOURUSERNAME/velox-iso
 ############################################################
 #
 #   DO NOT JUST RUN THIS. EXAMINE AND JUDGE. RUN AT YOUR OWN RISK.
@@ -97,20 +97,14 @@ configure_git() {
     fi
     git config --global push.default simple
 
-    if [[ "${SCRIPT_DIR}" == */EDU*/* || "${SCRIPT_DIR}" == */DATA*/* ]]; then
-        log_info "https://github.com/erikdubois/${project}"
-        git -C "${SCRIPT_DIR}" config --local user.name "Erik Dubois"
-        git -C "${SCRIPT_DIR}" config --local user.email "erik.dubois@gmail.com"
-        git -C "${SCRIPT_DIR}" remote set-url origin "git@github.com:erikdubois/${project}"
-        log_success "Git configured — remote set to git@github.com:erikdubois/${project}"
-    elif [[ "${SCRIPT_DIR}" == *"/KIRO"* ]]; then
-        log_info "https://github.com/kirodubes/${project}"
-        git -C "${SCRIPT_DIR}" config --local user.name "Kiro Dubes"
-        git -C "${SCRIPT_DIR}" config --local user.email "kirodubes@gmail.com"
-        git -C "${SCRIPT_DIR}" remote set-url origin "git@github.com-kiro:kirodubes/${project}"
-        log_success "Git configured — remote set to git@github.com-kiro:kirodubes/${project}"
+    if [[ "${SCRIPT_DIR}" == *"/VELOX"* || "${SCRIPT_DIR}" == *"/velox"* ]]; then
+        log_info "https://github.com/YOURUSERNAME/${project}"
+        git -C "${SCRIPT_DIR}" config --local user.name "Alex Torrella"
+        git -C "${SCRIPT_DIR}" config --local user.email "thelinuxtube@gmail.com"
+        git -C "${SCRIPT_DIR}" remote set-url origin "git@github.com:thelinuxtubetltos/${project}"
+        log_success "Git configured — remote set to git@github.com:thelinuxtubetltos/${project}"
     else
-        log_error "Cannot determine identity — path contains neither EDU nor KIRO: ${SCRIPT_DIR}"
+        log_error "Cannot determine identity — path does not contain VELOX: ${SCRIPT_DIR}"
         exit 1
     fi
 }

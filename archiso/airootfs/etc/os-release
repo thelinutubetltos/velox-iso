@@ -1,0 +1,8 @@
+NAME="Velox Linux"
+PRETTY_NAME="Velox Linux"
+ID=velox
+ID_LIKE=arch
+ANSI_COLOR="0;36"
+HOME_URL="https://github.com/thelinuxtubetltos/velox-iso"
+BUILD_ID=rolling
+LOGO=velox-logo
