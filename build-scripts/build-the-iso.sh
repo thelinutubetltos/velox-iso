@@ -93,9 +93,9 @@ chaoticsrepo=true
 clean_pacman_cache="no"       # yes | no
 remove_build_folder="no"      # yes | no — set to yes to clean up after build
 
-buildFolder="${HOME}/kiro-build"
-outFolder="${HOME}/kiro-Out"
-isoLabel="kiro-${kiroVersion}-x86_64.iso"
+buildFolder="${HOME}/velox-build"
+outFolder="${HOME}/velox-Out"
+isoLabel="kiro-${veloxVersion}-x86_64.iso"
 PACKAGES_FILE="${buildFolder}/archiso/packages.x86_64"
 
 #####################################################################
