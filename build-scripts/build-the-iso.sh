@@ -1,4 +1,4 @@
-#!/bin/bash
+-#!/bin/bash
 set -euo pipefail
 #####################################################################
 # Author    : Erik Dubois
@@ -86,8 +86,8 @@ trap 'on_error "$LINENO" "$BASH_COMMAND"' ERR
 #####################################################################
 # Build configuration — edit these before building
 #####################################################################
-desktop="xfce4/ohmychadwm"
-kiroVersion='v26.05.22'
+desktop="kde/plasma"
+veloxVersion='v1.0'
 nvidia_driver="open"          # open | 580xx | 390xx
 chaoticsrepo=true
 clean_pacman_cache="no"       # yes | no
@@ -95,7 +95,7 @@ remove_build_folder="no"      # yes | no — set to yes to clean up after build
 
 buildFolder="${HOME}/velox-build"
 outFolder="${HOME}/velox-Out"
-isoLabel="kiro-${veloxVersion}-x86_64.iso"
+isoLabel="velox-${veloxVersion}-x86_64.iso"
 PACKAGES_FILE="${buildFolder}/archiso/packages.x86_64"
 
 #####################################################################
@@ -174,7 +174,7 @@ setup_chaotic() {
 show_overview() {
     log_section "Build overview"
     echo "  Desktop      : ${desktop}"
-    echo "  Version      : ${kiroVersion}"
+    echo "  Version      : ${veloxVersion}"
     echo "  ISO label    : ${isoLabel}"
     echo "  NVIDIA driver: ${nvidia_driver}"
     echo "  Build folder : ${buildFolder}"
