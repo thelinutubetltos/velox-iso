@@ -34,3 +34,7 @@ menuentry "Velox Linux" {
     initrd /boot/initramfs-linux.img
 }
 GRUBEOF
+
+# Fix SDDM autologin user
+INSTALL_USER=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 && $1 != "liveuser" {print $1; exit}')
+sed -i "/\[Autologin\]/a User=$INSTALL_USER" /etc/sddm.conf
