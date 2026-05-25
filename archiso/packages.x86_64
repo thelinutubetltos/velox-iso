@@ -4,8 +4,8 @@
 
 base
 base-devel
-linux-lqx
-linux-lqx-headers
+linux
+linux-headers
 linux-firmware
 linux-firmware-marvell
 linux-atm
@@ -472,3 +472,4 @@ claude-code
 ###########################################################################
 
 #velox-dummy-git
+grub

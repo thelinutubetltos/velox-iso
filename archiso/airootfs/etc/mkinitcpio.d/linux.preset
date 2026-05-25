@@ -1,8 +1,8 @@
-# mkinitcpio preset file for the 'linux' package on archiso
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux"
 
-PRESETS=('archiso')
+PRESETS=('default' 'fallback')
 
-ALL_kver='/boot/vmlinuz-linux-lqx'
-archiso_config='/etc/mkinitcpio.conf'
-
-archiso_image="/boot/initramfs-linux-lqx.img"
+default_image="/boot/initramfs-linux.img"
+fallback_image="/boot/initramfs-linux-fallback.img"
+fallback_options="-S autodetect"
