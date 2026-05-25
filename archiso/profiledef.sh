@@ -26,7 +26,5 @@ file_permissions=(
   ["/etc/polkit-1/rules.d"]="0:0:750"
   ["/etc/sudoers.d"]="0:0:750"
   ["/etc/grub.d/40_custom"]="0:0:755"
-  ["/etc/skel/Desktop/install-velox.desktop"]="0:0:755"
-  ["/home/liveuser/Desktop/install-velox.desktop"]="0:0:755"
-  ["/root/Desktop/install-velox.desktop"]="0:0:755"
+  
 )
