@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Fix Desktop Permissions
+Exec=bash -c 'chmod +x ~/Desktop/install-velox.desktop'
+Terminal=false
+Hidden=false
+X-KDE-autostart-phase=1
