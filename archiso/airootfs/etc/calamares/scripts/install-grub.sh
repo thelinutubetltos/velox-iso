@@ -10,6 +10,9 @@ echo "ROOT_PART=$ROOT_PART"
 echo "ROOT_DISK=$ROOT_DISK"
 echo "ROOT_UUID=$ROOT_UUID"
 
+# Fix mkinitcpio hooks for installed system
+sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/' /tmp/calamares-root/etc/mkinitcpio.conf
+
 grub-install --target=i386-pc --boot-directory=/tmp/calamares-root/boot /dev/$ROOT_DISK
 
 mkdir -p /tmp/calamares-root/boot/grub
