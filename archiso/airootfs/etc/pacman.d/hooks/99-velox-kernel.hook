@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = linux
+
+[Action]
+Description = Saving kernel for Velox installer
+When = PostTransaction
+Exec = /bin/sh -c 'mkdir -p /usr/lib/velox-kernel && cp /boot/vmlinuz-linux /usr/lib/velox-kernel/vmlinuz-linux'
