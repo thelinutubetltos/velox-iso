@@ -15,7 +15,7 @@ airootfs_image_type="squashfs"
 #airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86')
 #airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
 #airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '6')
-airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '6' '-b' '1M')
+airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '1' '-b' '1M')
 bootstrap_tarball_compression=(zstd -19)
 file_permissions=(
   ["/etc/gshadow"]="0:0:400"
@@ -26,4 +26,7 @@ file_permissions=(
   ["/etc/polkit-1/rules.d"]="0:0:750"
   ["/etc/sudoers.d"]="0:0:750"
   ["/etc/grub.d/40_custom"]="0:0:755"
+  ["/etc/skel/Desktop/install-velox.desktop"]="0:0:755"
+  ["/home/liveuser/Desktop/install-velox.desktop"]="0:0:755"
+  ["/root/Desktop/install-velox.desktop"]="0:0:755"
 )
