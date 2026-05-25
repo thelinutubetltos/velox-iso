@@ -1,7 +1,14 @@
 #!/bin/bash
+exec > /tmp/velox-grub-install.log 2>&1
+set -x
+
 ROOT_PART=$(findmnt -n -o SOURCE /tmp/calamares-root)
 ROOT_DISK=$(lsblk -no pkname $ROOT_PART)
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
+
+echo "ROOT_PART=$ROOT_PART"
+echo "ROOT_DISK=$ROOT_DISK"
+echo "ROOT_UUID=$ROOT_UUID"
 
 grub-install --target=i386-pc --boot-directory=/tmp/calamares-root/boot /dev/$ROOT_DISK
 
