@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = File
+Target = home/liveuser/Desktop/cal-kiro.desktop
+
+[Action]
+Description = Remove Kiro installer desktop file
+When = PostTransaction
+Exec = /bin/sh -c 'rm -f /home/liveuser/Desktop/cal-kiro.desktop /root/Desktop/cal-kiro.desktop /usr/share/applications/cal-kiro.desktop'
