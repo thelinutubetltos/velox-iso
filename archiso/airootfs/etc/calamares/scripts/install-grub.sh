@@ -1,12 +1,10 @@
 #!/bin/bash
 ROOT_PART=$(findmnt -n -o SOURCE /tmp/calamares-root)
 ROOT_DISK=$(lsblk -no pkname $ROOT_PART)
-ROOT_UUID=$(findmnt -n -o UUID /tmp/calamares-root)
+ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
 
-# Install GRUB to MBR
 grub-install --target=i386-pc --boot-directory=/tmp/calamares-root/boot /dev/$ROOT_DISK
 
-# Generate grub.cfg
 mkdir -p /tmp/calamares-root/boot/grub
 cat > /tmp/calamares-root/boot/grub/grub.cfg << GRUBEOF
 set default=0
@@ -19,7 +17,6 @@ menuentry "Velox Linux" {
 }
 GRUBEOF
 
-# Generate proper initramfs
 mount --bind /proc /tmp/calamares-root/proc
 mount --bind /sys /tmp/calamares-root/sys
 mount --bind /dev /tmp/calamares-root/dev
