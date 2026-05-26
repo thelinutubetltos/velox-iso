@@ -1,7 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Calamares Installer
-Exec=launch-calamares
-Terminal=false
+Exec=sh -c "pkexec /usr/bin/calamares"
 Hidden=false
-X-KDE-autostart-phase=2
+NoDisplay=false
+X-KDE-StartupNotify=false
+Name=Calamares Autostart
+Comment=Autostart Calamares Installer with root privileges
