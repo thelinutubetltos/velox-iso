@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Calamares Installer
-Exec=pkexec calamares
+Exec=launch-calamares
 Terminal=false
 Hidden=false
 X-KDE-autostart-phase=2
