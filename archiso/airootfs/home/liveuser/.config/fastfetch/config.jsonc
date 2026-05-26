@@ -1,0 +1,29 @@
+{
+  "logo": {
+    "type": "file-raw",
+    "source": "~/.config/fastfetch/velox.txt"
+  },
+  "display": {
+    "separator": " ➜ ",
+    "color": {
+      "keys": "38;2;204;51;51",
+      "output": "38;2;90;129;96"
+    }
+  },
+  "modules": [
+    "title",
+    "separator",
+    "os",
+    "host",
+    "kernel",
+    "packages",
+    "shell",
+    "de",
+    "wm",
+    "terminal",
+    "cpu",
+    "gpu",
+    "memory",
+    "uptime"
+  ]
+}
