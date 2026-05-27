@@ -2,9 +2,10 @@
 exec > /tmp/velox-install.log 2>&1
 set -x
 
-# Copy saved kernel to /boot
+# Find and copy kernel to /boot
+KERNEL_VERSION=$(ls /usr/lib/modules/ | sort -V | tail -1)
 mkdir -p /boot
-cp /usr/lib/velox-kernel/vmlinuz-linux /boot/vmlinuz-linux
+cp /usr/lib/modules/$KERNEL_VERSION/vmlinuz /boot/vmlinuz-linux
 
 # Fix mkinitcpio hooks
 sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
