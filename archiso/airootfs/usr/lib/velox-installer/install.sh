@@ -67,12 +67,4 @@ menuentry "Velox Linux (fallback initramfs)" {
 GRUBEOF
 
 # Disable autologin on installed system
-cat > /etc/sddm.conf << SDDMEOF
-[Autologin]
-User=
-Session=
-
-[General]
-HaltCommand=/usr/bin/systemctl poweroff
-RebootCommand=/usr/bin/systemctl reboot
-SDDMEOF
+sed -i 's/^User=liveuser/User=/' /etc/sddm.conf.d/kde_settings.conf
