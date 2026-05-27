@@ -66,6 +66,13 @@ menuentry "Velox Linux (fallback initramfs)" {
 }
 GRUBEOF
 
-# Fix SDDM autologin user
-INSTALL_USER=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 && $1 != "liveuser" {print $1; exit}')
-sed -i "/\[Autologin\]/a User=$INSTALL_USER" /etc/sddm.conf
+# Disable autologin on installed system
+cat > /etc/sddm.conf << SDDMEOF
+[Autologin]
+User=
+Session=
+
+[General]
+HaltCommand=/usr/bin/systemctl poweroff
+RebootCommand=/usr/bin/systemctl reboot
+SDDMEOF
