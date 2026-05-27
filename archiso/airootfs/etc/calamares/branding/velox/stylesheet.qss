@@ -1,34 +1,34 @@
 /* Main window */
 QWidget {
     background-color: #1a1a1a;
-    color: #5a8160;
+    color: #6dab74;
 }
 
 /* Progress bar */
 QProgressBar {
     background-color: #2a2a2a;
-    border: 1px solid #5a8160;
+    border: 1px solid #6dab74;
     border-radius: 4px;
     text-align: center;
     color: #ffffff;
 }
 
 QProgressBar::chunk {
-    background-color: #5a8160;
+    background-color: #6dab74;
     border-radius: 4px;
 }
 
 /* Buttons */
 QPushButton {
     background-color: #2a2a2a;
-    color: #5a8160;
-    border: 1px solid #5a8160;
+    color: #6dab74;
+    border: 1px solid #6dab74;
     border-radius: 4px;
     padding: 6px 16px;
 }
 
 QPushButton:hover {
-    background-color: #5a8160;
+    background-color: #6dab74;
     color: #000000;
 }
 
@@ -40,7 +40,7 @@ QPushButton:pressed {
 QLineEdit, QComboBox {
     background-color: #2a2a2a;
     color: #ffffff;
-    border: 1px solid #5a8160;
+    border: 1px solid #6dab74;
     border-radius: 4px;
     padding: 4px;
 }
