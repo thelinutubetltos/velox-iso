@@ -19,100 +19,120 @@ Presentation {
 
     Slide {
         anchors.fill: parent
+        Image {
+            anchors.fill: parent
+            source: "velox-wall-1.png"
+            fillMode: Image.PreserveAspectCrop
+        }
         Rectangle {
             anchors.fill: parent
-            color: "#1a1a2e"
-            Column {
-                anchors.centerIn: parent
-                spacing: 20
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Welcome to Velox Linux"
-                    color: "#ffffff"
-                    font.pixelSize: 28
-                    font.bold: true
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Shape it. Race it. Own it."
-                    color: "#00ff88"
-                    font.pixelSize: 18
-                }
+            color: "#aa000000"
+        }
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Welcome to Velox Linux"
+                color: "#ffffff"
+                font.pixelSize: 36
+                font.bold: true
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Shape It. Race It. Own It."
+                color: "#5a8160"
+                font.pixelSize: 22
             }
         }
     }
 
     Slide {
         anchors.fill: parent
+        Image {
+            anchors.fill: parent
+            source: "velox-wall-2.png"
+            fillMode: Image.PreserveAspectCrop
+        }
         Rectangle {
             anchors.fill: parent
-            color: "#1a1a2e"
-            Column {
-                anchors.centerIn: parent
-                spacing: 20
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "KDE Plasma Desktop"
-                    color: "#ffffff"
-                    font.pixelSize: 28
-                    font.bold: true
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "A modern, powerful, and beautiful desktop environment"
-                    color: "#00ff88"
-                    font.pixelSize: 16
-                }
+            color: "#aa000000"
+        }
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "KDE Plasma Desktop"
+                color: "#ffffff"
+                font.pixelSize: 36
+                font.bold: true
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "A modern, powerful, and beautiful desktop environment"
+                color: "#5a8160"
+                font.pixelSize: 18
             }
         }
     }
 
     Slide {
         anchors.fill: parent
+        Image {
+            anchors.fill: parent
+            source: "velox-wall-3.png"
+            fillMode: Image.PreserveAspectCrop
+        }
         Rectangle {
             anchors.fill: parent
-            color: "#1a1a2e"
-            Column {
-                anchors.centerIn: parent
-                spacing: 20
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Built for Creators"
-                    color: "#ffffff"
-                    font.pixelSize: 28
-                    font.bold: true
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Kdenlive, OBS Studio, GIMP and Inkscape included"
-                    color: "#00ff88"
-                    font.pixelSize: 16
-                }
+            color: "#aa000000"
+        }
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Built for Creators"
+                color: "#ffffff"
+                font.pixelSize: 36
+                font.bold: true
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Kdenlive, OBS Studio, GIMP and Inkscape included"
+                color: "#5a8160"
+                font.pixelSize: 18
             }
         }
     }
 
     Slide {
         anchors.fill: parent
+        Image {
+            anchors.fill: parent
+            source: "velox-wall-4.png"
+            fillMode: Image.PreserveAspectCrop
+        }
         Rectangle {
             anchors.fill: parent
-            color: "#1a1a2e"
-            Column {
-                anchors.centerIn: parent
-                spacing: 20
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Arch Linux Based"
-                    color: "#ffffff"
-                    font.pixelSize: 28
-                    font.bold: true
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Rolling release — always up to date"
-                    color: "#00ff88"
-                    font.pixelSize: 16
-                }
+            color: "#aa000000"
+        }
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Arch Linux Based"
+                color: "#ffffff"
+                font.pixelSize: 36
+                font.bold: true
+            }
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Rolling release — always up to date"
+                color: "#5a8160"
+                font.pixelSize: 18
             }
         }
     }
