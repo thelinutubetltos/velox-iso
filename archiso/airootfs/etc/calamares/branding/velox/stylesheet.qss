@@ -52,17 +52,17 @@ QLabel {
 
 /* Sidebar */
 #sidebarApp {
-    background-color: #000000;
+    background-color: #1a1a1a;
     color: #cc3333;
 }
 
 #sidebarMenuApp {
-    background-color: #000000;
+    background-color: #1a1a1a;
     color: #cc3333;
 }
 
 QListView {
-    background-color: #000000;
+    background-color: #1a1a1a;
     color: #cc3333;
 }
 
