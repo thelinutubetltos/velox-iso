@@ -49,3 +49,28 @@ QLineEdit, QComboBox {
 QLabel {
     color: #ffffff;
 }
+
+/* Sidebar */
+#sidebarApp {
+    background-color: #000000;
+    color: #cc3333;
+}
+
+#sidebarMenuApp {
+    background-color: #000000;
+    color: #cc3333;
+}
+
+QListView {
+    background-color: #000000;
+    color: #cc3333;
+}
+
+QListView::item {
+    color: #cc3333;
+}
+
+QListView::item:selected {
+    background-color: #1a1a1a;
+    color: #cc3333;
+}
