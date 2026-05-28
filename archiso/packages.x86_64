@@ -280,9 +280,6 @@ edu-sddm-simplicity-git
 ###########################################################################
 
 firefox
-brave-bin
-vivaldi
-vivaldi-ffmpeg-codecs
 gimp
 inkscape
 vlc
@@ -372,20 +369,14 @@ dialog
 noto-fonts
 noto-fonts-emoji
 ttf-dejavu
-ttf-droid
 ttf-hack
 ttf-roboto
-ttf-roboto-mono
 ttf-ubuntu-font-family
 ttf-jetbrains-mono-nerd
-ttf-meslo-nerd-font-powerlevel10k
 ttf-ms-fonts
 ttf-font-awesome
 ttf-material-design-iconic-font
 adobe-source-sans-fonts
-adobe-source-han-sans-jp-fonts
-adobe-source-han-sans-kr-fonts
-adobe-source-han-sans-cn-fonts
 
 ###########################################################################
 ####                           THEMES & ICONS
@@ -479,3 +470,4 @@ claude-code
 
 #velox-dummy-git
 grub
+python-pyqt6
