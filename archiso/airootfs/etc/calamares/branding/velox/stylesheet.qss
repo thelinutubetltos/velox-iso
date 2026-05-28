@@ -74,3 +74,12 @@ QListView::item:selected {
     background-color: #1a1a1a;
     color: #cc3333;
 }
+
+#sidebarApp {
+    background-color: #4a4a4a !important;
+    color: #ffffff !important;
+}
+
+#logoApp {
+    background-color: #4a4a4a !important;
+}
