@@ -1,232 +1,170 @@
-![Velox Linux](images/darkmateria.png)
+# 🐧 Velox Linux
 
-# Velox Linux
+<div align="center">
 
-> **Shape it. Race it. Own it.**
+**Shape It. Race It. Own It.**
 
----
+[![GitHub](https://img.shields.io/badge/GitHub-velox--iso-5a8160?style=for-the-badge&logo=github)](https://github.com/thelinutubetltos/velox-iso)
+[![YouTube](https://img.shields.io/badge/YouTube-The%20Linux%20Tube-cc3333?style=for-the-badge&logo=youtube)](https://youtube.com/@thelinuxtube)
+[![Repo](https://img.shields.io/badge/Package%20Repo-velox__repo-5a8160?style=for-the-badge)](https://thelinutubetltos.github.io/velox_repo)
 
-## Overview
-
-**Velox Linux** is a personal Arch Linux ISO builder that creates fully customized installation media using the official ArchISO toolchain. Velox produces reproducible builds with pre-configured packages, desktop environments, system optimizations, and custom configurations baked in.
-
-Velox Linux is designed with specific preferences in mind:
-
-- **Boot Method**: UEFI with systemd-boot
-- **Filesystem**: ext4
-- **Display Manager**: SDDM with custom theming
-- **Desktop Environment**: KDE Plasma
-- **Philosophy**: Free and open-source software
+</div>
 
 ---
 
-## Quick Start
+## 🚀 What is Velox Linux?
 
-Download the latest Velox Linux ISO from [SourceForge](#).
+Velox Linux is an **Arch Linux-based KDE Plasma distribution** built for creators, gamers, and power users who want a fast, beautiful, and fully-featured system right out of the box. Forked from Kiro, Velox has been heavily customized and rebranded with its own identity, tooling, and package repository.
 
-Want to build your own? See [Building Velox](#building-velox) below.
-
----
-
-## Features
-
-- **Reproducible Builds** — Script-driven, consistent ISO creation
-- **Highly Customizable** — Easy to add/remove packages and modify configurations
-- **Modern Defaults** — UEFI, systemd, systemd-oomd, performance optimizations
-- **KDE Plasma** — Full-featured, modern desktop environment
-- **Pre-configured** — Ready-to-use after installation with Calamares
-- **Performance Tuned** — Intelligent task scheduling, memory optimization, system monitoring
-- **Custom Repository Support** — Chaotic AUR and personal repositories
+> **Velox** (Latin) — *swift, fast, rapid*
 
 ---
 
-## What's Included
+## ✨ What's Included
 
-Velox Linux comes pre-loaded with:
+### 🖥️ Desktop Environment
+- **KDE Plasma 6** — modern, powerful, and fully customized
+- **Kvantum** dark theme with Velox green accents
+- **Custom wallpapers** — dark atmospheric art bundled out of the box
+- **Custom SDDM login theme** — Velox branded with wallpaper background
 
-- **System Tools**: Package management, filesystem utilities, boot loaders (GRUB, systemd-boot, rEFInd)
-- **Network**: NetworkManager, VPN support, SSH, wireless tools
-- **Desktop Applications**: Firefox, Chromium, Vivaldi, GIMP, Inkscape, VSCode, Sublime Text
-- **Media Support**: VLC, FFmpeg, GStreamer with full codec support
-- **Development Tools**: Git, build essentials, development libraries
-- **Optimizations**: ananicy-cpp task scheduling, systemd-oomd memory management, tuned performance profiles
-- **Customization**: Curated fonts, icons, themes, and shell configurations
+### 📦 Software
+- **Firefox** + **Brave** + **Vivaldi** — browsers for every taste
+- **Kdenlive** + **OBS Studio** + **GIMP** + **Inkscape** — creative tools
+- **VLC** + **MPV** — media players
+- **qBittorrent** — torrent client
+- **Signal Desktop** — secure messaging
+- **Visual Studio Code** + **Sublime Text** — code editors
+- **Fastfetch** — custom Velox-branded system info
+- **Paru** + **Yay** — AUR helpers pre-installed
 
----
+### ⚡ Performance
+- **linux kernel** — default, with support for zen, lts, cachyos, and more via welcome app
+- **Ananicy-cpp** + **CachyOS rules** — automatic process priority management
+- **Zram** — compressed RAM swap for better performance
+- **irqbalance** — optimized interrupt handling
+- **hblock** — ad and malware blocking at the system level
 
-## Building Velox
+### 🔧 System Tools
+- **Calamares installer** — fully themed with Velox branding, wallpaper slideshow, and dark UI
+- **Gparted** + **KDE Partition Manager** — disk management
+- **Timeshift** support — easy system backups
+- **Hardinfo2** + **hw-probe** — hardware diagnostics
+- **Btop** + **Resources** + **Glances** — system monitoring
 
-### Requirements
-
-- **Host System**: Arch Linux or Arch-based distribution
-- **Packages**: `archiso`, `grub` (installed automatically if missing)
-- **Permissions**: Do not run as root — the script calls `sudo` internally
-- **Disk Space**: ~10–15 GB for build environment
-
-### Build Workflow
-
-```bash
-# 1. Bump the version string across all version files
-bash change-version.sh
-
-# 2. Build the ISO (run as normal user from build-scripts/)
-cd build-scripts && bash build-the-iso.sh
-```
-
-Build output lands in `~/velox-Out/`. Checksums (sha1, sha256, md5) and a package list are generated alongside the ISO.
-
-### NVIDIA Driver Selection
-
-Before building, open `build-scripts/build-the-iso.sh` and set `nvidia_driver` in the config block at the top:
-
-```bash
-nvidia_driver="open"    # nvidia-open-dkms  — modern GPUs (default)
-nvidia_driver="580xx"   # nvidia-580xx-dkms — legacy
-nvidia_driver="390xx"   # nvidia-390xx-dkms — older legacy
-```
-
-### Adding a Personal Local Repo
-
-See the commented `[personal_repo]` block in `archiso/pacman.conf`.
+### 🎮 Gaming Ready
+- **Steam** pre-configured
+- **GameMode** — automatic performance boost for games
+- **MangoHud** — in-game performance overlay
+- **Wine** + **Lutris** support
+- **NVIDIA** open + proprietary driver support
+- **AMD** driver support
 
 ---
 
-## Project Structure
+## 🛠️ Velox Tooling
 
-```
-velox-iso/
-├── archiso/                    # Core ISO build configuration
-│   ├── airootfs/               # Root filesystem overlay (lands at / on live ISO)
-│   │   ├── etc/                # System config (pacman, NM, locale, polkit, modprobe)
-│   │   ├── usr/                # Additional binaries and configs
-│   │   └── root/               # Root user's home on the live system
-│   ├── bootstrap_packages      # Minimal bootstrap package set
-│   ├── efiboot/                # EFI boot files
-│   ├── grub/                   # GRUB boot configuration
-│   ├── syslinux/               # Syslinux boot configuration
-│   ├── packages.x86_64         # Full package list (one package per line)
-│   ├── profiledef.sh           # ISO profile: name, label, version, compression
-│   └── pacman.conf             # Repos used during the ISO build
-├── build-scripts/
-│   ├── build-the-iso.sh        # Main build pipeline
-│   ├── get-pacman-repos-keys-and-mirrors.sh  # Installs chaotic-keyring/mirrorlist
-│   ├── install-yay-or-paru.sh  # AUR helper installer (yay or paru)
-│   └── pacman.conf             # pacman config installed on the build host
-├── images/                     # Screenshots and branding assets
-├── CHANGELOG.md                # Full project history
-├── change-version.sh           # Bumps version across all version files
-├── setup.sh                    # Git remote and identity setup
-└── up.sh                       # Pull → commit → push helper
-```
+### velox-welcome
+A custom KDE welcome application that launches on first boot with:
+- System update shortcuts
+- One-click app installation (Gaming, Creative, Internet)
+- Kernel manager — install zen, lts, cachyos, tkg and more
+- NVIDIA/AMD driver installer
+- Quick links to support and community
 
----
+### velox_repo
+A custom package repository hosted on GitHub Pages:
+- **velox-wallpapers** — official Velox wallpaper pack
+- **velox-welcome** — the Velox welcome application
+- More tools coming soon
 
-## Technical Details
-
-### System Configuration
-
-#### Boot & Initialization
-
-- **Boot Methods**: UEFI (primary), GRUB (legacy BIOS), Syslinux (alternative)
-- **Boot Loader**: systemd-boot (default UEFI), GRUB (legacy)
-- **Init System**: systemd with cgroups-v2 support
-- **Filesystem**: ext4 (default)
-
-#### Memory & Performance Management
-
-- **systemd-oomd**: Out-of-Memory daemon with proactive memory management
-  - 20-second reaction time with 60% memory pressure threshold
-  - Memory pressure monitoring enabled
-  - Graceful overflow handling
-- **ananicy-cpp**: Intelligent task scheduling with CachyOS rules
-- **tuned**: Performance profile manager
-- **zram-generator**: Compressed RAM swap for memory efficiency
-
-#### Display & Desktop
-
-- **Display Manager**: SDDM with Breeze theme
-- **Desktop Environment**: KDE Plasma
-- **Window Manager**: KWin (Wayland + X11)
-- **Icons**: Breeze icon theme
-- **Cursors**: Breeze cursors
-
-### Package Categories
-
-#### System Utilities
-
-- Core: `base`, `base-devel`, `linux`, `linux-headers`
-- Live System: `archiso`
-- Filesystems: `btrfs-progs`, `ntfs-3g`, `exfatprogs`, `dosfstools`
-- Monitoring: `btop`, `glances`, `inxi`, `lm_sensors`, `systemd-devel`
-
-#### Installation & System Recovery
-
-- **Calamares**: Modern graphical installer with modular architecture
-- **Recovery Tools**: `clonezilla`, `fsarchiver`, `partclone`, `gparted`
-- **Disk Utilities**: `parted`, `gptfdisk`, `fdisk`, `testdisk`
-
-#### Network & Connectivity
-
-- **Management**: NetworkManager with graphical frontends
-- **VPN**: OpenConnect, OpenVPN, VPNC, PPTP support
-- **DNS/DHCP**: Bind, dnsmasq, nss-mdns, Avahi
-- **Wireless**: iwd, wpa_supplicant, wireless-regdb
-- **SSH**: OpenSSH, secure remote management
-
-#### Desktop Applications
-
-- **Browsers**: Firefox, Chromium, Vivaldi
-- **Media**: VLC, FFmpeg, GStreamer (with all plugins)
-- **Graphics**: GIMP, Inkscape, ImageMagick, Nomacs
-- **Development**: VSCode, Sublime Text, Git, meld
-- **Communication**: Signal Desktop
-- **Utilities**: qBittorrent, yt-dlp, Simple Scan, Ark
-
-#### Audio & Video
-
-- **Audio**: PipeWire, WirePlumber, pavucontrol
-- **Bluetooth**: Bluez, Bluedevil (KDE manager)
-- **Video**: Mesa (open-source), NVIDIA open drivers
-- **Codecs**: gst-libav, libdvdcss, complete GStreamer plugin suite
-
-#### Fonts & Typography
-
-- **Font Families**: Noto Fonts, DejaVu, Ubuntu, Roboto, Hack, JetBrains Mono, Meslo Nerd Font
-- **CJK Support**: Adobe Han Sans (Japanese, Korean, Chinese)
-- **Icon Fonts**: Material Design, various Nerd Font variants
-
-#### AUR & Custom Repositories
-
-- **Chaotic AUR**: Precompiled packages from Arch User Repository
-- **AUR Helpers**: `paru-git`, `yay-git`
-- **Utilities**: `downgrade` (package downgrading)
-
-### Custom Repository
-
-Velox packages are available via:
-
+Add the repo to any Arch system:
 ```ini
 [velox_repo]
 SigLevel = Never
-Server = https://thelinutubetltos.github.io/$repo/$arch
+Server = https://thelinutubetltos.github.io/velox_repo/$arch
 ```
 
 ---
 
-## Changelog
+## 🥾 Boot Options
 
-See [CHANGELOG.md](CHANGELOG.md) for the full project history.
-
----
-
-## Resources
-
-- **Arch Wiki**: [ArchISO](https://wiki.archlinux.org/title/Archiso)
-- **Kiro Video Series** (upstream): [YouTube Playlist](https://www.youtube.com/watch?v=3jdKH6bLgUE&list=PLlloYVGq5pS71UubmlKjjw131PjixMIjW)
-- **Based on**: [Kiro](https://github.com/kirodubes/kiro-iso) by Erik Dubois
+The Velox GRUB menu includes entries for:
+- **Velox Linux** — default boot
+- **Velox Linux - NVIDIA (proprietary)** — for NVIDIA users
+- **Velox Linux - NVIDIA (open source)** — nouveau/open kernel module
+- **Velox Linux - AMD** — AMD GPU optimized
+- **Velox Linux (fallback)** — fallback initramfs
 
 ---
 
-## License
+## 🗺️ Roadmap
 
-Velox Linux is built on open-source tools and components. Refer to individual package licenses for details.
+### ✅ Phase 1 — Complete
+- [x] Working Calamares installer
+- [x] Custom branding and GRUB entries
+- [x] Kernel boots correctly after install
+- [x] SDDM login screen after install (no autologin)
+- [x] Custom Velox wallpapers
+- [x] Custom fastfetch logo
+- [x] Custom velox_repo on GitHub Pages
+- [x] UEFI + BIOS boot support
+
+### 🚧 Phase 2 — In Progress
+- [x] Calamares dark theme with wallpaper slideshow
+- [x] Custom SDDM login theme
+- [x] Kvantum dark theme
+- [x] velox-welcome app
+- [ ] velox-update tool
+- [ ] velox-tweak system tweaker
+- [ ] velox-mirrors mirror manager
+- [ ] velox-nvidia driver switcher
+- [ ] More wallpaper packs in velox_repo
+
+### 🔮 Phase 3 — Planned
+- [ ] Velox website
+- [ ] ISO release page with changelogs
+- [ ] Community Discord server
+- [ ] Velox-specific AUR packages
+- [ ] Auto-update notifier
+- [ ] Velox theme for Firefox
+- [ ] Custom Plasma widgets
+
+---
+
+## 📥 Installation
+
+1. Download the ISO from the [releases page](https://github.com/thelinutubetltos/velox-iso/releases)
+2. Flash to USB with [Ventoy](https://www.ventoy.net) or [Balena Etcher](https://etcher.balena.io)
+3. Boot from USB
+4. Calamares installer launches automatically
+5. Follow the installer steps
+6. Reboot and log in — the Velox welcome app will guide you through the rest
+
+---
+
+## 🏗️ Building the ISO
+
+```bash
+git clone https://github.com/thelinutubetltos/velox-iso.git
+cd velox-iso/build-scripts
+bash build-the-iso.sh
+```
+
+The ISO will be output to `/home/$USER/velox-Out/`.
+
+---
+
+## 🔗 Links
+
+| Resource | Link |
+|---|---|
+| 📦 Package Repository | [velox_repo](https://github.com/thelinutubetltos/velox_repo) |
+| 📺 YouTube | [The Linux Tube](https://youtube.com/@thelinuxtube) |
+| 🐛 Bug Reports | [GitHub Issues](https://github.com/thelinutubetltos/velox-iso/issues) |
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ by The Linux Tube &nbsp;|&nbsp; Shape It. Race It. Own It.</sub>
+</div>
