@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Velox Welcome
+Exec=velox-welcome
+Terminal=false
+Hidden=false
+X-KDE-autostart-phase=2
