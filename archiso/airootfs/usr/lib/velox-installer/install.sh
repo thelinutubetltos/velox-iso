@@ -17,16 +17,17 @@ mkinitcpio -p linux
 ROOT_PART=$(findmnt -n -o SOURCE /)
 ROOT_DISK=$(lsblk -no pkname $ROOT_PART)
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
-echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID"
+ROOT_FS=$(blkid -s TYPE -o value $ROOT_PART)
+echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID ROOT_FS=$ROOT_FS"
 
 # Install grub - support both BIOS and UEFI
 if [ -d /sys/firmware/efi ]; then
     mkdir -p /boot/efi
     mount /dev/${ROOT_DISK}1 /boot/efi 2>/dev/null || true
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --removable
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --removable --modules="part_gpt part_msdos $ROOT_FS"
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --modules="part_gpt part_msdos $ROOT_FS"
 else
-    grub-install --target=i386-pc /dev/$ROOT_DISK
+    grub-install --target=i386-pc /dev/$ROOT_DISK --modules="part_gpt part_msdos $ROOT_FS"
 fi
 
 # Write grub.cfg
@@ -34,6 +35,7 @@ mkdir -p /boot/grub
 cat > /boot/grub/grub.cfg << GRUBEOF
 set default=0
 set timeout=10
+insmod $ROOT_FS
 
 menuentry "Velox Linux" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
