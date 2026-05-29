@@ -26,5 +26,7 @@ file_permissions=(
   ["/etc/polkit-1/rules.d"]="0:0:750"
   ["/etc/sudoers.d"]="0:0:750"
   ["/etc/grub.d/40_custom"]="0:0:755"
+  ["/usr/lib/velox-installer/run-install.sh"]="0:0:755"
+  ["/usr/lib/velox-installer/install.sh"]="0:0:755"
   
 )
