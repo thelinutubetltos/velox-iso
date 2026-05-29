@@ -13,8 +13,8 @@ sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard k
 # Generate initramfs
 mkinitcpio -p linux
 
-# Get disk info
-ROOT_PART=$(findmnt -n -o SOURCE /)
+# Get disk info - strip btrfs subvolume path if present
+ROOT_PART=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
 ROOT_DISK=$(lsblk -no pkname $ROOT_PART)
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
 ROOT_FS=$(blkid -s TYPE -o value $ROOT_PART)
@@ -32,7 +32,9 @@ esac
 # Install grub - support both BIOS and UEFI
 if [ -d /sys/firmware/efi ]; then
     mkdir -p /boot/efi
-    mount /dev/${ROOT_DISK}1 /boot/efi 2>/dev/null || true
+    # Find EFI partition - first vfat partition on the disk
+    EFI_PART=$(lsblk -no NAME,FSTYPE /dev/$ROOT_DISK | awk '$2=="vfat"{print $1; exit}')
+    mount /dev/$EFI_PART /boot/efi 2>/dev/null || true
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --removable --modules="part_gpt part_msdos $GRUB_FS"
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --modules="part_gpt part_msdos $GRUB_FS"
 else
