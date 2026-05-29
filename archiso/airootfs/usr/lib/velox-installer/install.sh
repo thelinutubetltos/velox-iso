@@ -13,11 +13,13 @@ sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard k
 # Generate initramfs
 mkinitcpio -p linux
 
-# Get disk info - strip btrfs subvolume path if present
+# Get disk info from /proc instead of lsblk (works in chroot)
 ROOT_PART=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
-ROOT_DISK=$(lsblk -no pkname $ROOT_PART)
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
 ROOT_FS=$(blkid -s TYPE -o value $ROOT_PART)
+
+# Get disk name by stripping partition number from device name
+ROOT_DISK=$(echo $ROOT_PART | sed 's|/dev/||' | sed 's/[0-9]*$//')
 echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID ROOT_FS=$ROOT_FS"
 
 # Map filesystem to correct GRUB module name
@@ -32,9 +34,9 @@ esac
 # Install grub - support both BIOS and UEFI
 if [ -d /sys/firmware/efi ]; then
     mkdir -p /boot/efi
-    # Find EFI partition - first vfat partition on the disk
-    EFI_PART=$(lsblk -no NAME,FSTYPE /dev/$ROOT_DISK | awk '$2=="vfat"{print $1; exit}')
-    mount /dev/$EFI_PART /boot/efi 2>/dev/null || true
+    # Find EFI partition from /proc/partitions
+    EFI_PART=$(blkid | grep vfat | grep ${ROOT_DISK} | awk -F: '{print $1}' | head -1)
+    mount $EFI_PART /boot/efi 2>/dev/null || true
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --removable --modules="part_gpt part_msdos $GRUB_FS"
     grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Velox --modules="part_gpt part_msdos $GRUB_FS"
 else
