@@ -68,3 +68,11 @@ GRUBEOF
 
 # Disable autologin on installed system
 sed -i 's/^User=liveuser/User=/' /etc/sddm.conf.d/kde_settings.conf
+
+# Copy autostart files to installed user
+INSTALL_USER=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 && $1 != "liveuser" {print $1; exit}')
+if [ -n "$INSTALL_USER" ]; then
+    mkdir -p /home/$INSTALL_USER/.config/autostart
+    cp /etc/skel/.config/autostart/*.desktop /home/$INSTALL_USER/.config/autostart/ 2>/dev/null || true
+    chown -R $INSTALL_USER:$INSTALL_USER /home/$INSTALL_USER/.config/autostart/
+fi
