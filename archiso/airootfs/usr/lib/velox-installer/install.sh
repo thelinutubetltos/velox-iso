@@ -70,7 +70,7 @@ GRUBEOF
 sed -i 's/^User=liveuser/User=/' /etc/sddm.conf.d/kde_settings.conf
 
 # Add velox-welcome autostart for installed user
-INSTALL_USER=$(getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 && $1 != "liveuser" {print $1; exit}')
+INSTALL_USER=$(ls /home | grep -v lost+found | head -1)
 if [ -n "$INSTALL_USER" ]; then
     mkdir -p /home/$INSTALL_USER/.config/autostart
     cat > /home/$INSTALL_USER/.config/autostart/velox-welcome.desktop << AUTOEOF
