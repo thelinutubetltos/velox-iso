@@ -17,7 +17,6 @@ mkinitcpio-nfs-utils
 mkinitcpio-firmware
 sudo
 nano
-vim
 less
 man-db
 man-pages
@@ -280,12 +279,8 @@ edu-sddm-simplicity-git
 ###########################################################################
 
 firefox
-gimp
-inkscape
 vlc
 qbittorrent
-signal-desktop
-kdenlive
 obs-studio
 imagemagick
 meld
