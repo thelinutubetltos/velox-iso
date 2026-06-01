@@ -70,10 +70,10 @@ GRUBEOF
 sed -i 's/^User=liveuser/User=/' /etc/sddm.conf.d/kde_settings.conf
 
 # Add velox-welcome autostart for installed user
-INSTALL_USER=$(ls /home | grep -v lost+found | head -1)
+INSTALL_USER=$(ls /mnt/home | grep -v lost+found | head -1)
 if [ -n "$INSTALL_USER" ]; then
-    mkdir -p /home/$INSTALL_USER/.config/autostart
-    cat > /home/$INSTALL_USER/.config/autostart/velox-welcome.desktop << AUTOEOF
+    mkdir -p /mnt/home/$INSTALL_USER/.config/autostart
+    cat > /mnt/home/$INSTALL_USER/.config/autostart/velox-welcome.desktop << AUTOEOF
 [Desktop Entry]
 Type=Application
 Name=Velox Welcome
@@ -82,5 +82,5 @@ Terminal=false
 Hidden=false
 X-KDE-autostart-phase=2
 AUTOEOF
-    chown -R $INSTALL_USER:$INSTALL_USER /home/$INSTALL_USER/.config/
+    chown -R $INSTALL_USER:$INSTALL_USER /mnt/home/$INSTALL_USER/.config/
 fi
