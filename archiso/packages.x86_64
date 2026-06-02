@@ -272,7 +272,6 @@ accountsservice
 ###########################################################################
 
 sddm
-edu-sddm-simplicity-git
 
 ###########################################################################
 ####                           APPLICATIONS
@@ -329,9 +328,6 @@ downgrade
 pacmanlogviewer
 pamac-aur
 octopi
-archlinux-tweak-tool-gtk4-git
-archlinux-logout-gtk4-git
-archlinux-tools
 appstream
 rate-mirrors
 reflector
@@ -379,21 +375,8 @@ adobe-source-sans-fonts
 
 kvantum
 arc-gtk-theme
-edu-arc-dawn-git
-edu-arc-kde
-edu-neo-candy-arc-git
-edu-neo-candy-arc-mint-grey-git
-edu-neo-candy-arc-mint-red-git
-edu-neo-candy-qogir-git
-edu-neo-candy-tela-git
 neo-candy-icons-git
 candy-icons-git
-numix-icon-theme-git
-numix-circle-icon-theme-git
-sardi-icons
-surfn-icons-git
-beautyline
-bibata-cursor-theme
 vimix-cursors
 capitaine-cursors
 
@@ -401,11 +384,8 @@ capitaine-cursors
 ####                           NEMESIS REPO
 ###########################################################################
 
-edu-dot-files-git
 edu-shells-git
-edu-system-files-git
 edu-variety-config-git
-edu-powermenu-git
 pacman-hook-kernel-install
 speedtest-cli
 wttr
@@ -439,7 +419,6 @@ mugshot
 menulibre
 fish
 alacritty
-alacritty-tweak-tool-git
 poppler-glib
 poppler-qt5
 vte4
@@ -466,3 +445,4 @@ claude-code
 #velox-dummy-git
 grub
 python-pyqt6
+qt6-declarative

@@ -1,12 +1,7 @@
--#!/bin/bash
+#!/bin/bash
 set -euo pipefail
 #####################################################################
-# Author    : Erik Dubois
-# Website   : https://www.erikdubois.be
-#####################################################################
-#
-#   DO NOT JUST RUN THIS. EXAMINE AND JUDGE. RUN AT YOUR OWN RISK.
-#
+# Author    : Erik Dubois (base) — modified for Velox Linux
 #####################################################################
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -256,6 +251,24 @@ stamp_build_date() {
     clean_cache
 }
 
+strip_bloat() {
+    log_section "Phase 7b — Stripping locales, docs, man pages"
+    local airootfs="${buildFolder}/x86_64/airootfs"
+
+    # Strip all locales except English
+    find "${airootfs}/usr/share/locale" -mindepth 1 -maxdepth 1 \
+        ! -name 'en_US' ! -name 'en' ! -name 'locale.alias' \
+        -exec sudo rm -rf {} + 2>/dev/null || true
+
+    # Strip docs and man pages
+    sudo rm -rf "${airootfs}/usr/share/doc"
+    sudo rm -rf "${airootfs}/usr/share/man"
+    sudo rm -rf "${airootfs}/usr/share/gtk-doc"
+    sudo rm -rf "${airootfs}/usr/share/info"
+
+    log_info "Bloat stripping complete"
+}
+
 build_iso() {
     log_section "Phase 8 — Running mkarchiso (this takes a while)"
     mkdir -p "${outFolder}"
@@ -297,6 +310,7 @@ main() {
     prepopulate_keyring
     inject_nvidia_packages
     stamp_build_date
+#    strip_bloat
     build_iso
     create_checksums
 

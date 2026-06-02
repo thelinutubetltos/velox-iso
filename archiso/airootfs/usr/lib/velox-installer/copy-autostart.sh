@@ -13,3 +13,9 @@ X-KDE-autostart-phase=2
 DESKTOPEOF
     chown -R ${INSTALL_USER}:${INSTALL_USER} /home/${INSTALL_USER}/.config/
 fi
+
+# Set breeze-velox SDDM theme on installed system
+sed -i 's/Current=.*/Current=breeze-velox/' /etc/sddm.conf.d/kde_settings.conf
+
+# Remove liveuser from installed system
+userdel -r liveuser 2>/dev/null || true
