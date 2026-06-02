@@ -340,7 +340,7 @@ class VeloxWelcome(QMainWindow):
 
     def install_package(self, package):
         helper = get_aur_helper()
-        cmd = f"{helper} -S --needed {package}" if helper else f"sudo pacman -S --needed {package}"
+        cmd = f"{helper} -Sy --needed {package}" if helper else f"sudo pacman -Sy --needed {package}"
         self.run_terminal_command(cmd, f"Install {package}")
 
     def toggle_autostart(self, state):
@@ -374,7 +374,7 @@ class VeloxWelcome(QMainWindow):
 
         self.add_section_label(layout, "🔄 System")
         layout.addWidget(self.make_button("Update System",
-            lambda: self.run_terminal_command("sudo pacman -Syu")))
+            lambda: self.run_terminal_command("sudo pacman -Syyu")))
         layout.addWidget(self.make_button("Update AUR Packages",
             lambda: self.run_terminal_command(f"{get_aur_helper() or 'paru'} -Syu")))
         layout.addWidget(self.make_button("Clean Package Cache",
@@ -399,7 +399,7 @@ class VeloxWelcome(QMainWindow):
             lambda: self.install_package("timeshift")))
         layout.addWidget(self.make_button("Enable Firewall (UFW)",
             lambda: self.run_terminal_command(
-                "sudo pacman -S --needed ufw && sudo ufw enable && sudo systemctl enable ufw")))
+                "sudo pacman -Sy --needed ufw && sudo ufw enable && sudo systemctl enable ufw")))
         layout.addWidget(self.make_button("Enable Bluetooth",
             lambda: self.run_terminal_command("sudo systemctl enable --now bluetooth")))
 
@@ -688,7 +688,7 @@ class VeloxWelcome(QMainWindow):
         if not flatpak_ok:
             layout.addWidget(self.make_button("⚠ Enable Flatpak + Add Flathub",
                 lambda: self.run_terminal_command(
-                    "sudo pacman -S --needed flatpak && "
+                    "sudo pacman -Sy --needed flatpak && "
                     "flatpak remote-add --if-not-exists flathub "
                     "https://dl.flathub.org/repo/flathub.flatpakrepo && "
                     "echo 'Flatpak enabled. Please restart Velox Welcome.'")))
