@@ -402,10 +402,7 @@ class VeloxWelcome(QMainWindow):
                 "sudo pacman -S --needed ufw && sudo ufw enable && sudo systemctl enable ufw")))
         layout.addWidget(self.make_button("Enable Bluetooth",
             lambda: self.run_terminal_command("sudo systemctl enable --now bluetooth")))
-        layout.addWidget(self.make_button("Enable Flatpak Support",
-            lambda: self.run_terminal_command(
-                "sudo pacman -S --needed flatpak && "
-                "flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo")))
+
 
         layout.addStretch()
         return outer
@@ -689,9 +686,15 @@ class VeloxWelcome(QMainWindow):
                     "git clone https://aur.archlinux.org/paru.git /tmp/paru && "
                     "cd /tmp/paru && makepkg -si")))
         if not flatpak_ok:
-            layout.addWidget(self.make_button("⚠ Enable Flatpak",
+            layout.addWidget(self.make_button("⚠ Enable Flatpak + Add Flathub",
                 lambda: self.run_terminal_command(
                     "sudo pacman -S --needed flatpak && "
+                    "flatpak remote-add --if-not-exists flathub "
+                    "https://dl.flathub.org/repo/flathub.flatpakrepo && "
+                    "echo 'Flatpak enabled. Please restart Velox Welcome.'")))
+        else:
+            layout.addWidget(self.make_button("🔄 Add / Refresh Flathub Remote",
+                lambda: self.run_terminal_command(
                     "flatpak remote-add --if-not-exists flathub "
                     "https://dl.flathub.org/repo/flathub.flatpakrepo")))
 
