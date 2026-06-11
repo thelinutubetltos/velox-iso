@@ -1,0 +1,8 @@
+[General]
+ColorScheme=LeafDark
+
+[Icons]
+Theme=Papirus-Dark
+
+[KDE]
+LookAndFeelPackage=leaf-dark
