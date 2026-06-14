@@ -6,8 +6,6 @@ base
 base-devel
 linux-velox
 linux-velox-headers
-linux
-linux-headers
 linux-firmware
 linux-firmware-marvell
 linux-atm

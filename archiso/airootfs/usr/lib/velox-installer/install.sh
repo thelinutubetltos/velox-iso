@@ -5,13 +5,13 @@ set -x
 # Find and copy kernel to /boot
 KERNEL_VERSION=$(ls /usr/lib/modules/ | sort -V | tail -1)
 mkdir -p /boot
-cp /usr/lib/modules/$KERNEL_VERSION/vmlinuz /boot/vmlinuz-linux
+cp /usr/lib/modules/$KERNEL_VERSION/vmlinuz /boot/vmlinuz-linux-velox
 
 # Fix mkinitcpio hooks
 sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
 
 # Generate initramfs
-mkinitcpio -p linux
+mkinitcpio -p linux-velox
 
 # Get disk info
 ROOT_PART=$(findmnt -n -o SOURCE / | sed 's/\[.*\]//')
@@ -37,32 +37,32 @@ set timeout=10
 
 menuentry "Velox Linux" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux /boot/vmlinuz-linux root=UUID=$ROOT_UUID rw quiet splash
-    initrd /boot/initramfs-linux.img
+    linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash
+    initrd /boot/initramfs-linux-velox.img
 }
 
 menuentry "Velox Linux - NVIDIA (proprietary)" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux /boot/vmlinuz-linux root=UUID=$ROOT_UUID rw quiet splash nvidia-drm.modeset=1
-    initrd /boot/initramfs-linux.img
+    linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash nvidia-drm.modeset=1
+    initrd /boot/initramfs-linux-velox.img
 }
 
 menuentry "Velox Linux - NVIDIA (open source)" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux /boot/vmlinuz-linux root=UUID=$ROOT_UUID rw quiet splash nvidia-drm.modeset=1 nouveau.modeset=1
-    initrd /boot/initramfs-linux.img
+    linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash nvidia-drm.modeset=1 nouveau.modeset=1
+    initrd /boot/initramfs-linux-velox.img
 }
 
 menuentry "Velox Linux - AMD" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux /boot/vmlinuz-linux root=UUID=$ROOT_UUID rw quiet splash amdgpu.modeset=1
-    initrd /boot/initramfs-linux.img
+    linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash amdgpu.modeset=1
+    initrd /boot/initramfs-linux-velox.img
 }
 
 menuentry "Velox Linux (fallback initramfs)" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux /boot/vmlinuz-linux root=UUID=$ROOT_UUID rw
-    initrd /boot/initramfs-linux-fallback.img
+    linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw
+    initrd /boot/initramfs-linux-velox-fallback.img
 }
 GRUBEOF
 
