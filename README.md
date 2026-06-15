@@ -1,4 +1,4 @@
-# 🐧 Velox Linux
+# Velox Linux
 
 <div align="center">
 
@@ -6,144 +6,168 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-velox--iso-5a8160?style=for-the-badge&logo=github)](https://github.com/thelinutubetltos/velox-iso)
 [![YouTube](https://img.shields.io/badge/YouTube-The%20Linux%20Tube-cc3333?style=for-the-badge&logo=youtube)](https://youtube.com/@thelinuxtube)
+[![SourceForge](https://img.shields.io/badge/Download-SourceForge-ff6600?style=for-the-badge&logo=sourceforge)](https://sourceforge.net/projects/velox-linux/)
 [![Repo](https://img.shields.io/badge/Package%20Repo-velox__repo-5a8160?style=for-the-badge)](https://thelinutubetltos.github.io/velox_repo)
 
 </div>
 
 ---
 
-## 🚀 What is Velox Linux?
+## What is Velox Linux?
 
-Velox Linux is an **Arch Linux-based KDE Plasma distribution** built for creators, gamers, and power users who want a fast, beautiful, and fully-featured system right out of the box. Forked from Kiro, Velox has been heavily customized and rebranded with its own identity, tooling, and package repository.
+Velox Linux is an **Arch Linux-based KDE Plasma distribution** built for creators, gamers, and power users who want a fast, beautiful, and fully-featured system right out of the box.
 
 > **Velox** (Latin) — *swift, fast, rapid*
 
 ---
 
-## ✨ What's Included
+## What's Included
 
-### 🖥️ Desktop Environment
+### Desktop Environment
 - **KDE Plasma 6** — modern, powerful, and fully customized
 - **Kvantum** dark theme with Velox green accents
-- **Custom wallpapers** — dark atmospheric art bundled out of the box
+- **Custom wallpapers** — Velox-1 through Velox-7, dark atmospheric art
 - **Custom SDDM login theme** — Velox branded with wallpaper background
+- **KDE lock screen** — Velox wallpaper set via skel
 
-### 📦 Software
-- **Firefox** + **Brave** + **Vivaldi** — browsers for every taste
-- **Kdenlive** + **OBS Studio** + **GIMP** + **Inkscape** — creative tools
-- **VLC** + **MPV** — media players
+### Software
+- **Firefox** — browser pre-installed
+- **Kdenlive** + **OBS Studio** + **GIMP** + **Inkscape** + **Krita** — creative tools
+- **VLC** — media player
 - **qBittorrent** — torrent client
-- **Signal Desktop** — secure messaging
 - **Visual Studio Code** + **Sublime Text** — code editors
-- **Fastfetch** — custom Velox-branded system info
+- **Fastfetch** — custom Velox-branded system info (VL monogram logo)
 - **Paru** + **Yay** — AUR helpers pre-installed
+- **Flatpak** — pre-installed and ready
 
-### ⚡ Performance
-- **linux kernel** — default, with support for zen, lts, cachyos, and more via welcome app
+### Performance
+- **linux-velox** — custom performance-tuned kernel based on CachyOS (7.0.12-1-velox)
+- **CPU governor locked to `performance`** on boot — faster response, better benchmark scores
 - **Ananicy-cpp** + **CachyOS rules** — automatic process priority management
 - **Zram** — compressed RAM swap for better performance
 - **irqbalance** — optimized interrupt handling
 - **hblock** — ad and malware blocking at the system level
 
-### 🔧 System Tools
+### System Tools
 - **Calamares installer** — fully themed with Velox branding, wallpaper slideshow, and dark UI
 - **Gparted** + **KDE Partition Manager** — disk management
-- **Timeshift** support — easy system backups
 - **Hardinfo2** + **hw-probe** — hardware diagnostics
 - **Btop** + **Resources** + **Glances** — system monitoring
+- **Snapper** support — BTRFS snapshots via velox-welcome
 
-### 🎮 Gaming Ready
+### Gaming Ready
 - **Steam** pre-configured
-- **GameMode** — automatic performance boost for games
+- **Lutris** + **Heroic** + **Bottles** — game launchers
 - **MangoHud** — in-game performance overlay
-- **Wine** + **Lutris** support
-- **NVIDIA** open + proprietary driver support
-- **AMD** driver support
+- **NVIDIA drivers** installed automatically post-install on NVIDIA hardware
+- **AMD** driver support via mesa (included)
 
 ---
 
-## 🛠️ Velox Tooling
+## NVIDIA Driver Handling
+
+Velox does **not** bundle NVIDIA proprietary drivers in the live ISO. Instead:
+
+- The **live environment** runs on open source mesa/nouveau drivers
+- During installation, Calamares **auto-detects your GPU** via `lspci`
+- If an NVIDIA GPU is found, `nvidia-open-dkms`, `nvidia-utils`, and `nvidia-settings` are installed automatically into the installed system
+- NVIDIA GRUB boot entries are only added when NVIDIA hardware is detected
+
+This keeps the ISO lean and avoids carrying DKMS-compiled modules for hardware that may not be present.
+
+---
+
+## Velox Tooling
 
 ### velox-welcome
 A custom KDE welcome application that launches on first boot with:
 - System update shortcuts
-- One-click app installation (Gaming, Creative, Internet)
-- Kernel manager — install zen, lts, cachyos, tkg and more
-- NVIDIA/AMD driver installer
-- Quick links to support and community
+- One-click app installation (Gaming, Creative, Internet, Browsers)
+- Kernel manager — install additional kernels
+- Snapper + grub-btrfs setup and snapshot management
+- Package search across pacman, Chaotic-AUR, AUR, and Flatpak
+- Autostart toggle for future boots
 
-### velox_repo
-A custom package repository hosted on GitHub Pages:
-- **velox-wallpapers** — official Velox wallpaper pack
-- **velox-welcome** — the Velox welcome application
-- More tools coming soon
+### Custom Repositories
 
-Add the repo to any Arch system:
+**velox_repo** — small packages hosted on GitHub Pages:
 ```ini
 [velox_repo]
 SigLevel = Never
 Server = https://thelinutubetltos.github.io/velox_repo/$arch
 ```
 
+**velox-packages** — large packages (kernel, calamares) hosted on GitHub Releases:
+```ini
+[velox-packages]
+SigLevel = Never
+Server = https://github.com/thelinutubetltos/velox_repo/releases/download/velox-packages
+```
+
 ---
 
-## 🥾 Boot Options
+## Boot Options
 
-The Velox GRUB menu includes entries for:
+After installation, the GRUB menu includes:
 - **Velox Linux** — default boot
-- **Velox Linux - NVIDIA (proprietary)** — for NVIDIA users
-- **Velox Linux - NVIDIA (open source)** — nouveau/open kernel module
+- **Velox Linux - NVIDIA (proprietary)** — only on NVIDIA hardware
+- **Velox Linux - NVIDIA (open source)** — only on NVIDIA hardware
 - **Velox Linux - AMD** — AMD GPU optimized
 - **Velox Linux (fallback)** — fallback initramfs
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### ✅ Phase 1 — Complete
+### Phase 1 — Complete
 - [x] Working Calamares installer
 - [x] Custom branding and GRUB entries
 - [x] Kernel boots correctly after install
 - [x] SDDM login screen after install (no autologin)
-- [x] Custom Velox wallpapers
+- [x] Custom Velox wallpapers (Velox-1 through Velox-7)
 - [x] Custom fastfetch logo
 - [x] Custom velox_repo on GitHub Pages
 - [x] UEFI + BIOS boot support
-
-### 🚧 Phase 2 — In Progress
 - [x] Calamares dark theme with wallpaper slideshow
-- [x] Custom SDDM login theme
+- [x] Custom SDDM login theme (breeze-velox)
 - [x] Kvantum dark theme
-- [x] velox-welcome app
+- [x] velox-welcome v2.0 app
+- [x] linux-velox custom kernel
+- [x] velox-packages repo on GitHub Releases
+- [x] CPU performance governor on boot
+- [x] NVIDIA auto-detection and post-install driver setup
+- [x] ISO under 4 GB (SourceForge compatible)
+
+### Phase 2 — In Progress
 - [ ] velox-update tool
 - [ ] velox-tweak system tweaker
 - [ ] velox-mirrors mirror manager
 - [ ] velox-nvidia driver switcher
-- [ ] More wallpaper packs in velox_repo
+- [ ] useradd hook — auto-copy velox-welcome autostart to new users
+- [ ] Leaf KDE theme integration
 
-### 🔮 Phase 3 — Planned
+### Phase 3 — Planned
 - [ ] Velox website
 - [ ] ISO release page with changelogs
 - [ ] Community Discord server
-- [ ] Velox-specific AUR packages
 - [ ] Auto-update notifier
 - [ ] Velox theme for Firefox
 - [ ] Custom Plasma widgets
 
 ---
 
-## 📥 Installation
+## Installation
 
-1. Download the ISO from the [releases page](https://github.com/thelinutubetltos/velox-iso/releases)
+1. Download the ISO from [SourceForge](https://sourceforge.net/projects/velox-linux/)
 2. Flash to USB with [Ventoy](https://www.ventoy.net) or [Balena Etcher](https://etcher.balena.io)
 3. Boot from USB
 4. Calamares installer launches automatically
-5. Follow the installer steps
+5. Follow the installer steps — NVIDIA drivers install automatically if detected
 6. Reboot and log in — the Velox welcome app will guide you through the rest
 
 ---
 
-## 🏗️ Building the ISO
+## Building the ISO
 
 ```bash
 git clone https://github.com/thelinutubetltos/velox-iso.git
@@ -151,20 +175,21 @@ cd velox-iso/build-scripts
 bash build-the-iso.sh
 ```
 
-The ISO will be output to `/home/$USER/velox-Out/`.
+The ISO will be output to `~/velox-Out/`.
 
 ---
 
-## 🔗 Links
+## Links
 
 | Resource | Link |
 |---|---|
-| 📦 Package Repository | [velox_repo](https://github.com/thelinutubetltos/velox_repo) |
-| 📺 YouTube | [The Linux Tube](https://youtube.com/@thelinuxtube) |
-| 🐛 Bug Reports | [GitHub Issues](https://github.com/thelinutubetltos/velox-iso/issues) |
+| Download | [SourceForge](https://sourceforge.net/projects/velox-linux/) |
+| Package Repository | [velox_repo](https://github.com/thelinutubetltos/velox_repo) |
+| YouTube | [The Linux Tube](https://youtube.com/@thelinuxtube) |
+| Bug Reports | [GitHub Issues](https://github.com/thelinutubetltos/velox-iso/issues) |
 
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by The Linux Tube &nbsp;|&nbsp; Shape It. Race It. Own It.</sub>
+  <sub>Built by The Linux Tube &nbsp;|&nbsp; Shape It. Race It. Own It.</sub>
 </div>
