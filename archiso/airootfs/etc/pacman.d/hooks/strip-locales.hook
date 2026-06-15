@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Stripping non-English locales...
+When = PostTransaction
+Exec = /bin/sh -c 'find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name "en" ! -name "en_US" ! -name "en_GB" -exec rm -rf {} +'

@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Stripping docs and man pages from live ISO...
+When = PostTransaction
+Exec = /bin/sh -c 'rm -rf /usr/share/doc/* /usr/share/man/* /usr/share/info/*'
