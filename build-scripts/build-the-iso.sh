@@ -308,7 +308,7 @@ main() {
 
     prepare_build_tree
     prepopulate_keyring
-    inject_nvidia_packages
+#    inject_nvidia_packages  # NVIDIA removed from live ISO — installed post-install via install.sh
     stamp_build_date
 #    strip_bloat
     build_iso

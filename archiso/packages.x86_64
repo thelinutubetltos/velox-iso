@@ -171,11 +171,9 @@ mesa
 
 ###########################################################################
 ####                           NVIDIA
+####   Removed from live ISO — installed post-install via install.sh
+####   based on GPU detection. Live environment uses nouveau (mesa).
 ###########################################################################
-
-nvidia-open-dkms
-nvidia-utils
-nvidia-settings
 
 ###########################################################################
 ####                           AUDIO

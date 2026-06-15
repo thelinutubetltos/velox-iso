@@ -19,6 +19,16 @@ ROOT_DISK=$(echo $ROOT_PART | sed 's|/dev/||' | sed 's/[0-9]*$//')
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
 echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID"
 
+# Detect NVIDIA GPU and install proprietary drivers
+HAS_NVIDIA=false
+if lspci | grep -qi nvidia; then
+    HAS_NVIDIA=true
+    echo "NVIDIA GPU detected — installing proprietary drivers"
+    pacman -S --noconfirm --needed nvidia-open-dkms nvidia-utils nvidia-settings
+    sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
+    mkinitcpio -p linux-velox
+fi
+
 # Install grub
 if [ -d /sys/firmware/efi ]; then
     mkdir -p /boot/efi
@@ -29,7 +39,7 @@ else
     grub-install --target=i386-pc /dev/$ROOT_DISK
 fi
 
-# Write grub.cfg
+# Write grub.cfg — NVIDIA entries only added if drivers were installed
 mkdir -p /boot/grub
 cat > /boot/grub/grub.cfg << GRUBEOF
 set default=0
@@ -40,6 +50,10 @@ menuentry "Velox Linux" {
     linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash
     initrd /boot/initramfs-linux-velox.img
 }
+GRUBEOF
+
+if [ "$HAS_NVIDIA" = true ]; then
+    cat >> /boot/grub/grub.cfg << GRUBEOF
 
 menuentry "Velox Linux - NVIDIA (proprietary)" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
@@ -52,6 +66,10 @@ menuentry "Velox Linux - NVIDIA (open source)" {
     linux /boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID rw quiet splash nvidia-drm.modeset=1 nouveau.modeset=1
     initrd /boot/initramfs-linux-velox.img
 }
+GRUBEOF
+fi
+
+cat >> /boot/grub/grub.cfg << GRUBEOF
 
 menuentry "Velox Linux - AMD" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
