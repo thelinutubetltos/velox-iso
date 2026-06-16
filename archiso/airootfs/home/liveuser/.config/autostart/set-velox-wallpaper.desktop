@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Set Velox Wallpaper
+Exec=bash /home/%u/.local/bin/set-velox-wallpaper.sh
+Terminal=false
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE
