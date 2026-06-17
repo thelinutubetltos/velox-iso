@@ -322,6 +322,7 @@ gittyup
 
 paru-git
 yay-git
+velox-pkgcheck
 downgrade
 pacmanlogviewer
 pamac-aur
