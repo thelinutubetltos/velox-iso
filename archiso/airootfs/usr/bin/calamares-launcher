@@ -1,0 +1,8 @@
+#!/bin/bash
+export HOME=/root
+export XDG_CONFIG_HOME=/root/.config
+export XDG_DATA_HOME=/root/.local/share
+export QT_QPA_PLATFORMTHEME=kde
+export DISPLAY="${DISPLAY:-:0}"
+export XAUTHORITY="${XAUTHORITY:-/home/liveuser/.Xauthority}"
+exec /usr/bin/calamares "$@"

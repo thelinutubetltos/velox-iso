@@ -1,1 +1,3 @@
+Defaults:liveuser env_keep += "DISPLAY XAUTHORITY"
 liveuser ALL=(ALL) NOPASSWD: /usr/bin/calamares
+liveuser ALL=(ALL) NOPASSWD: /usr/bin/calamares-launcher

@@ -29,5 +29,7 @@ file_permissions=(
   ["/usr/bin/velox-welcome"]="0:0:755"
   ["/usr/lib/velox-installer/run-install.sh"]="0:0:755"
   ["/usr/lib/velox-installer/install.sh"]="0:0:755"
-  
+  ["/usr/bin/calamares-launcher"]="0:0:755"
+  ["/home/liveuser/Desktop/install-velox.desktop"]="1000:1000:755"
+  ["/home/liveuser/.config/autostart/calamares.desktop"]="1000:1000:755"
 )

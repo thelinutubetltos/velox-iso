@@ -1,7 +1,18 @@
 /* Main window */
 QWidget {
     background-color: #1a1a1a;
-    color: #6dab74;
+    color: #e0e0e0;
+}
+
+QFrame, QStackedWidget, QAbstractScrollArea {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+QTextBrowser, QTextEdit, QPlainTextEdit {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    border: 1px solid #3a3a3a;
 }
 
 /* Progress bar */
@@ -25,15 +36,23 @@ QPushButton {
     border: 1px solid #6dab74;
     border-radius: 4px;
     padding: 6px 16px;
+    min-width: 80px;
 }
 
 QPushButton:hover {
     background-color: #6dab74;
-    color: #000000;
+    color: #ffffff;
 }
 
 QPushButton:pressed {
-    background-color: #3d5c40;
+    background-color: #4a8a50;
+    color: #ffffff;
+}
+
+QPushButton:disabled {
+    background-color: #2a2a2a;
+    color: #555555;
+    border: 1px solid #444444;
 }
 
 /* Input fields */
@@ -45,41 +64,147 @@ QLineEdit, QComboBox {
     padding: 4px;
 }
 
+QComboBox QAbstractItemView {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    selection-background-color: #6dab74;
+    selection-color: #ffffff;
+}
+
 /* Labels */
 QLabel {
+    color: #e0e0e0;
+}
+
+/* List and tree views */
+QListView, QTreeView, QTableView {
+    background-color: #222222;
+    color: #e0e0e0;
+    border: 1px solid #3a3a3a;
+    alternate-background-color: #2a2a2a;
+}
+
+QListView::item, QTreeView::item {
+    color: #e0e0e0;
+    padding: 4px;
+}
+
+QListView::item:selected, QTreeView::item:selected {
+    background-color: #6dab74;
     color: #ffffff;
+}
+
+QListView::item:hover, QTreeView::item:hover {
+    background-color: #3a3a3a;
+    color: #ffffff;
+}
+
+QHeaderView::section {
+    background-color: #2a2a2a;
+    color: #6dab74;
+    border: 1px solid #3a3a3a;
+    padding: 4px;
+}
+
+/* Radio buttons and checkboxes */
+QRadioButton, QCheckBox {
+    color: #e0e0e0;
+    spacing: 8px;
+}
+
+QRadioButton::indicator:checked, QCheckBox::indicator:checked {
+    background-color: #6dab74;
+    border: 2px solid #6dab74;
+    border-radius: 3px;
+}
+
+QRadioButton::indicator:unchecked, QCheckBox::indicator:unchecked {
+    background-color: #2a2a2a;
+    border: 2px solid #6dab74;
+    border-radius: 3px;
 }
 
 /* Sidebar */
 #sidebarApp {
-    background-color: #1a1a1a;
-    color: #cc3333;
+    background-color: #111111;
+    color: #e0e0e0;
 }
 
 #sidebarMenuApp {
-    background-color: #1a1a1a;
-    color: #cc3333;
-}
-
-QListView {
-    background-color: #1a1a1a;
-    color: #cc3333;
-}
-
-QListView::item {
-    color: #cc3333;
-}
-
-QListView::item:selected {
-    background-color: #1a1a1a;
-    color: #cc3333;
-}
-
-#sidebarApp {
-    background-color: #4a4a4a !important;
-    color: #ffffff !important;
+    background-color: #111111;
+    color: #e0e0e0;
 }
 
 #logoApp {
-    background-color: #4a4a4a !important;
+    background-color: #111111;
+}
+
+/* Scroll bars */
+QScrollBar:vertical {
+    background-color: #1a1a1a;
+    width: 10px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #4a4a4a;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #6dab74;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+/* Tab widget */
+QTabBar::tab {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    padding: 6px 12px;
+    border: 1px solid #3a3a3a;
+}
+
+QTabBar::tab:selected {
+    background-color: #6dab74;
+    color: #ffffff;
+}
+
+QTabBar::tab:hover {
+    background-color: #3a3a3a;
+}
+
+/* Tooltips */
+QToolTip {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #6dab74;
+    padding: 4px;
+}
+
+/* Group boxes */
+QGroupBox {
+    color: #6dab74;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+QGroupBox::title {
+    color: #6dab74;
+    subcontrol-origin: margin;
+    left: 8px;
+}
+
+/* Spin boxes */
+QSpinBox, QDoubleSpinBox {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #6dab74;
+    border-radius: 4px;
+    padding: 4px;
 }

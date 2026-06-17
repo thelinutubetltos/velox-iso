@@ -26,7 +26,7 @@ Presentation {
         }
         Rectangle {
             anchors.fill: parent
-            color: "#cc000000"
+            color: "#44000000"
         }
         Column {
             anchors.centerIn: parent
@@ -72,7 +72,7 @@ Presentation {
         }
         Rectangle {
             anchors.fill: parent
-            color: "#cc000000"
+            color: "#44000000"
         }
         Column {
             anchors.centerIn: parent
@@ -118,7 +118,7 @@ Presentation {
         }
         Rectangle {
             anchors.fill: parent
-            color: "#cc000000"
+            color: "#44000000"
         }
         Column {
             anchors.centerIn: parent
@@ -164,7 +164,7 @@ Presentation {
         }
         Rectangle {
             anchors.fill: parent
-            color: "#cc000000"
+            color: "#44000000"
         }
         Column {
             anchors.centerIn: parent

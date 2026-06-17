@@ -1,7 +1,7 @@
 ---
 componentName: velox
 
-welcomeStyleCalamares: false
+welcomeStyleCalamares: true
 welcomeExpandingLogo: true
 
 strings:
@@ -26,8 +26,8 @@ slideshow:             "show.qml"
 slideshowAPI:          2
 
 style:
-  sidebarBackground:   "#4a4a4a"
-  sidebarText:         "#ffffff"
-  sidebarTextSelect:   "#6dab74"
-  sidebarTextHighlight: "#6dab74"
+  SidebarBackground:        "#111111"
+  SidebarText:              "#e0e0e0"
+  SidebarTextCurrent:       "#ffffff"
+  SidebarBackgroundCurrent: "#6dab74"
 stylesheet: stylesheet.qss

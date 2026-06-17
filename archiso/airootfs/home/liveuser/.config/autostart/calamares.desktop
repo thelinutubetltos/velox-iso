@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=sh -c "pkexec /usr/bin/calamares"
+Exec=sudo -n /usr/bin/calamares-launcher
 Hidden=false
 NoDisplay=false
 X-KDE-StartupNotify=false
