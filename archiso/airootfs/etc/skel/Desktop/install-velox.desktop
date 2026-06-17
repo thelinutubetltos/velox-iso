@@ -1,1 +1,12 @@
-/usr/share/applications/install-velox.desktop
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install Velox Linux
+GenericName=Installer
+Comment=Install Velox Linux to your system
+Exec=kdesu /usr/bin/calamares-launcher
+Icon=velox
+Terminal=false
+StartupNotify=true
+Categories=System;
+Keywords=install;system;

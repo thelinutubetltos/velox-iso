@@ -121,7 +121,7 @@ install_chaotic_packages() {
 configure_pacman_conf() {
     local source_conf="${SCRIPT_DIR}/pacman.conf"
     local target="/etc/pacman.conf"
-    local backup="${target}.kiro"
+    local backup="${target}.velox"
 
     log_section "Configuring /etc/pacman.conf"
 

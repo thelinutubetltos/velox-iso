@@ -103,17 +103,14 @@ bump_version() {
     sed -i "s|^ISO_RELEASE=.*|ISO_RELEASE=${newversion}|" "${devrel}"
 
     echo "Updating ${buildiso}"
-    sed -i "s|\(.*kiroVersion='\)[^']*\('.*\)|\1${newversion}\2|" "${buildiso}"
-
-    echo "Updating iso_label in ${profiledef}"
-    sed -i "s|^iso_label=\"kiro-.*\"|iso_label=\"kiro-${newversion}\"|" "${profiledef}"
+    sed -i "s|\(.*veloxVersion='\)[^']*\('.*\)|\1${newversion}\2|" "${buildiso}"
 
     echo "Updating iso_version in ${profiledef}"
     sed -i "s|^iso_version=\"v.*\"|iso_version=\"${newversion}\"|" "${profiledef}"
 
     log_info "Old → new version summary:
   dev-rel     : $(grep '^ISO_RELEASE=' "${devrel}")
-  build-iso   : $(grep 'kiroVersion=' "${buildiso}")
+  build-iso   : $(grep 'veloxVersion=' "${buildiso}")
   profiledef  : $(grep '^iso_label=' "${profiledef}") / $(grep '^iso_version=' "${profiledef}")"
 }
 
