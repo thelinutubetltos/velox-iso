@@ -285,7 +285,6 @@ gittyup
 
 paru-git
 yay-git
-velox-pkgcheck
 downgrade
 pacmanlogviewer
 pamac-aur
@@ -380,7 +379,9 @@ claude-code
 ####                        Velox Tools & Packages
 ########################################################################
 
-
+velox-welcome
+velox-wallpapers
+velox-pkgcheck
 
 ###########################################################################
 ####                           PERSONAL REPO
