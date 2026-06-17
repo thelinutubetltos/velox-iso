@@ -186,13 +186,17 @@ prepare_build_tree() {
     log_section "Phase 4 — Refreshing skel and package list"
 
     local skel_dir="${buildFolder}/archiso/airootfs/etc/skel"
-    echo "Clearing skel..."
-    find "${skel_dir}" -mindepth 1 -delete 2>/dev/null || true
 
+    # Phase 3 already copied the full source archiso (including skel) to the build folder.
+    # Just refresh .bashrc from edu-shells so we get latest shell aliases,
+    # then append fastfetch so it runs on every terminal open.
     echo "Fetching latest .bashrc..."
     wget -q "https://raw.githubusercontent.com/erikdubois/edu-shells/refs/heads/main/etc/skel/.bashrc-latest" \
         -O "${skel_dir}/.bashrc" \
         || { log_error "Failed to download .bashrc from edu-shells"; exit 1; }
+
+    echo "" >> "${skel_dir}/.bashrc"
+    echo "fastfetch" >> "${skel_dir}/.bashrc"
 
     echo "Refreshing packages.x86_64..."
     cp -f "${REPO_DIR}/archiso/packages.x86_64" "${PACKAGES_FILE}"
