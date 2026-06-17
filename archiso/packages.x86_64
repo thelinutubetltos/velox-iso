@@ -8,12 +8,10 @@ linux-velox
 linux-velox-headers
 linux-firmware
 linux-firmware-marvell
-linux-atm
 amd-ucode
 intel-ucode
 mkinitcpio
 mkinitcpio-archiso
-mkinitcpio-nfs-utils
 mkinitcpio-firmware
 sudo
 nano
@@ -28,8 +26,6 @@ rsync
 git
 cronie
 logrotate
-expac
-pkgfile
 lsb-release
 plocate
 upower
@@ -43,7 +39,6 @@ oh-my-zsh-git
 ###########################################################################
 
 grub
-refind
 efibootmgr
 edk2-shell
 syslinux
@@ -60,13 +55,10 @@ upd72020x-fw
 wd719x-firmware
 sof-firmware
 alsa-firmware
-intel-ucode
-amd-ucode
 dmidecode
 lshw
 hwinfo
 hardinfo2
-hw-probe
 lm_sensors
 inxi
 cpuid
@@ -78,8 +70,6 @@ usbmuxd
 libfido2
 tpm2-tss
 nvme-cli
-sdparm
-sg3_utils
 smartmontools
 hdparm
 hyperv
@@ -95,8 +85,6 @@ e2fsprogs
 exfatprogs
 f2fs-tools
 dosfstools
-jfsutils
-nilfs-utils
 ntfs-3g
 udftools
 xfsprogs
@@ -110,14 +98,12 @@ mdadm
 cryptsetup
 squashfs-tools
 mtools
-nbd
 pv
 ddrescue
 testdisk
 partclone
 partimage
 fsarchiver
-clonezilla
 gparted
 
 ###########################################################################
@@ -128,7 +114,6 @@ networkmanager
 network-manager-applet
 networkmanager-openconnect
 networkmanager-openvpn
-networkmanager-pptp
 networkmanager-vpnc
 avahi
 nss-mdns
@@ -139,20 +124,12 @@ openconnect
 openvpn
 vpnc
 ppp
-pptpclient
-xl2tpd
-wvdial
 iwd
 iw
 wpa_supplicant
 wireless-regdb
-wireless_tools
 nfs-utils
-bind
-dnsmasq
 dnsutils
-ndisc6
-ldns
 ethtool
 tcpdump
 reflector
@@ -165,7 +142,6 @@ arch-install-scripts
 xorg-server
 xorg-apps
 xorg-xinit
-xf86-input-elographics
 xf86-input-libinput
 mesa
 
@@ -205,7 +181,6 @@ libdvdcss
 bluez
 bluez-libs
 bluez-utils
-bluedevil
 
 ###########################################################################
 ####                           FILE MANAGEMENT
@@ -262,7 +237,6 @@ plasma-disks
 bluedevil
 power-profiles-daemon
 polkit-kde-agent
-sddm-git
 accountsservice
 
 ###########################################################################
@@ -280,10 +254,7 @@ vlc
 qbittorrent
 obs-studio
 imagemagick
-meld
-nomacs
 simple-scan
-btop
 baobab
 filelight
 yt-dlp
@@ -292,7 +263,6 @@ unrar
 unace
 unzip
 numlockx
-scrot
 flameshot-git
 
 ###########################################################################
@@ -300,19 +270,12 @@ flameshot-git
 ###########################################################################
 
 visual-studio-code-bin
-sublime-text-4
-gcc
-make
 fd
 ripgrep
 ripgrep-all
 bat
 duf
 tmux
-screen
-namcap
-devtools
-python-pylint
 the_silver_searcher
 gittyup
 
@@ -329,12 +292,9 @@ pamac-aur
 octopi
 appstream
 rate-mirrors
-reflector
 fastfetch-git
 btop
 resources
-glances
-sysz
 irqbalance
 ananicy-cpp
 cachyos-ananicy-rules-git
@@ -344,9 +304,7 @@ font-manager
 dconf-editor
 zenity
 yad
-lolcat
 ncdu
-most
 tldr
 inetutils
 laptop-detect
@@ -373,8 +331,6 @@ adobe-source-sans-fonts
 ###########################################################################
 
 kvantum
-arc-gtk-theme
-neo-candy-icons-git
 candy-icons-git
 papirus-icon-theme
 vimix-cursors
@@ -383,12 +339,9 @@ vimix-cursors
 ####                           NEMESIS REPO
 ###########################################################################
 
-edu-shells-git
-edu-variety-config-git
 pacman-hook-kernel-install
 speedtest-cli
 wttr
-variety
 
 ###########################################################################
 ####                           CHAOTIC AUR
@@ -410,12 +363,6 @@ calamares
 
 python-pyparted
 python-pywal
-unifetch
-sparklines-git
-hardcode-fixer-git
-mintstick
-mugshot
-menulibre
 fish
 alacritty
 poppler-glib
@@ -427,8 +374,6 @@ libopenraw
 freetype2
 playerctl
 polkit
-pcsclite
-open-iscsi
 claude-code
 
 #########################################################################
@@ -442,6 +387,3 @@ claude-code
 ###########################################################################
 
 #velox-dummy-git
-grub
-python-pyqt6
-qt6-declarative
