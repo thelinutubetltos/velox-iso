@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Request 1920x1080 via kscreen-doctor if the display supports it.
+# Falls back silently to the display's native resolution if not supported.
+
+sleep 3  # wait for KDE display stack to be ready
+
+if ! command -v kscreen-doctor &>/dev/null; then
+    exit 0
+fi
+
+# Get the first connected output name
+output=$(kscreen-doctor -o 2>/dev/null | awk '/Output:/{name=$2} /connected/{print name; exit}')
+[[ -z "$output" ]] && exit 0
+
+# Check if 1920x1080 is available for this output
+if kscreen-doctor -o 2>/dev/null | grep -q "1920x1080"; then
+    kscreen-doctor "output.${output}.mode.1920x1080@60" 2>/dev/null \
+    || kscreen-doctor "output.${output}.mode.1920x1080" 2>/dev/null
+fi
