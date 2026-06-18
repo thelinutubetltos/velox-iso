@@ -17,7 +17,7 @@ output_info=$(kscreen-doctor -o 2>/dev/null)
 [[ -z "$output_info" ]] && exit 0
 
 # Get the name of the first connected output
-output=$(echo "$output_info" | awk '/connected/{print $3; exit}')
+output=$(echo "$output_info" | awk '/Output:/{name=$3} /connected/{print name; exit}')
 [[ -z "$output" ]] && exit 0
 
 # Parse modes as INDEX:WxH@Hz — kscreen-doctor sets mode by index
