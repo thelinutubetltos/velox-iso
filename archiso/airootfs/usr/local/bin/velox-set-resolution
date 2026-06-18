@@ -16,44 +16,37 @@ fi
 output_info=$(kscreen-doctor -o 2>/dev/null)
 [[ -z "$output_info" ]] && exit 0
 
-# Get the name of the first connected output (field 3: "Output: ID NAME ...")
+# Get the name of the first connected output
 output=$(echo "$output_info" | awk '/connected/{print $3; exit}')
 [[ -z "$output" ]] && exit 0
 
-# Extract all available WxH@Hz modes (Hz includes decimals e.g. 60.00)
-mapfile -t modes < <(echo "$output_info" | grep -oP '\d+x\d+@[\d.]+' | sort -t'x' -k1 -rn)
-[[ ${#modes[@]} -eq 0 ]] && { touch "$DONE_FLAG"; exit 0; }
-
-# Find best resolution: prefer 1920x1080, else highest by pixel count
-best_mode=""
+# Parse modes as INDEX:WxH@Hz — kscreen-doctor sets mode by index
+best_index=""
+best_res=""
 best_pixels=0
 
-for mode in "${modes[@]}"; do
-    res="${mode%@*}"
+while IFS=: read -r idx res_hz; do
+    res="${res_hz%@*}"
     w="${res%x*}"; h="${res#*x}"
     pixels=$(( w * h ))
     if [[ "$res" == "1920x1080" ]]; then
-        best_mode="$mode"
+        best_index="$idx"
+        best_res="$res"
         break
     fi
     if (( pixels > best_pixels )); then
         best_pixels=$pixels
-        best_mode="$mode"
+        best_index="$idx"
+        best_res="$res"
     fi
-done
+done < <(echo "$output_info" | grep -oP '\d+:\d+x\d+@[\d.]+')
 
-# Strip trailing .00 from Hz for cleaner mode string if needed
-best_hz_clean="${best_hz%.00}"
-best_hz_clean="${best_hz_clean%.0}"
+[[ -z "$best_index" ]] && { touch "$DONE_FLAG"; exit 0; }
 
-[[ -z "$best_mode" ]] && { touch "$DONE_FLAG"; exit 0; }
-
-best_res="${best_mode%@*}"
-best_hz="${best_mode#*@}"
-
-# Already at the best resolution — mark done and exit silently
-current_res=$(echo "$output_info" | grep -oP '\d+x\d+@\d+\*' | head -1 | tr -d '*')
-[[ "${current_res%@*}" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+# Get current resolution
+current_res=$(echo "$output_info" | grep -oP '\d+x\d+@[\d.]+\*' | head -1 | tr -d '*')
+current_res="${current_res%@*}"
+[[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
 
 # Show popup
 zenity --question \
@@ -64,9 +57,7 @@ zenity --question \
     --width=380 2>/dev/null
 
 if [[ $? -eq 0 ]]; then
-    kscreen-doctor "output.${output}.mode.${best_res}@${best_hz}" 2>/dev/null \
-    || kscreen-doctor "output.${output}.mode.${best_res}@${best_hz_clean}" 2>/dev/null \
-    || kscreen-doctor "output.${output}.mode.${best_res}" 2>/dev/null
+    kscreen-doctor "output.${output}.mode.${best_index}" 2>/dev/null
 fi
 
 touch "$DONE_FLAG"
