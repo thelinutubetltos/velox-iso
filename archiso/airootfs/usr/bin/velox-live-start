@@ -1,3 +1,3 @@
 #!/bin/bash
-/usr/local/bin/velox-set-resolution
+/usr/bin/velox-set-resolution
 exec sudo -n /usr/bin/calamares-launcher

@@ -15,7 +15,7 @@ DESKTOPEOF
 [Desktop Entry]
 Type=Application
 Name=Set Resolution
-Exec=/usr/local/bin/velox-set-resolution
+Exec=/usr/bin/velox-set-resolution
 Hidden=false
 NoDisplay=true
 X-KDE-StartupNotify=false

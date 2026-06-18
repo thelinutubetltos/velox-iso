@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=/usr/local/bin/velox-live-start
+Exec=/usr/bin/velox-live-start
 Hidden=false
 NoDisplay=false
 X-KDE-StartupNotify=false
