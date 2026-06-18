@@ -1,19 +1,67 @@
 #!/usr/bin/env bash
-# Request 1920x1080 via kscreen-doctor if the display supports it.
-# Falls back silently to the display's native resolution if not supported.
+# velox-set-resolution — first-run display resolution wizard.
+# Detects the best available resolution, asks the user to apply it.
+# Runs once; marks itself done via a flag file.
 
-sleep 3  # wait for KDE display stack to be ready
+DONE_FLAG="$HOME/.config/velox-resolution-configured"
+[[ -f "$DONE_FLAG" ]] && exit 0
 
-if ! command -v kscreen-doctor &>/dev/null; then
+sleep 4  # wait for KDE display stack to be ready
+
+if ! command -v kscreen-doctor &>/dev/null || ! command -v zenity &>/dev/null; then
+    touch "$DONE_FLAG"
     exit 0
 fi
 
-# Get the first connected output name
-output=$(kscreen-doctor -o 2>/dev/null | awk '/Output:/{name=$2} /connected/{print name; exit}')
+output_info=$(kscreen-doctor -o 2>/dev/null)
+[[ -z "$output_info" ]] && exit 0
+
+# Get the name of the first connected output (field 3: "Output: ID NAME ...")
+output=$(echo "$output_info" | awk '/connected/{print $3; exit}')
 [[ -z "$output" ]] && exit 0
 
-# Check if 1920x1080 is available for this output
-if kscreen-doctor -o 2>/dev/null | grep -q "1920x1080"; then
-    kscreen-doctor "output.${output}.mode.1920x1080@60" 2>/dev/null \
-    || kscreen-doctor "output.${output}.mode.1920x1080" 2>/dev/null
+# Extract all available WxH@Hz modes
+mapfile -t modes < <(echo "$output_info" | grep -oP '\d+x\d+@\d+' | sort -t'x' -k1 -rn)
+[[ ${#modes[@]} -eq 0 ]] && { touch "$DONE_FLAG"; exit 0; }
+
+# Find best resolution: prefer 1920x1080, else highest by pixel count
+best_mode=""
+best_pixels=0
+
+for mode in "${modes[@]}"; do
+    res="${mode%@*}"
+    w="${res%x*}"; h="${res#*x}"
+    pixels=$(( w * h ))
+    if [[ "$res" == "1920x1080" ]]; then
+        best_mode="$mode"
+        break
+    fi
+    if (( pixels > best_pixels )); then
+        best_pixels=$pixels
+        best_mode="$mode"
+    fi
+done
+
+[[ -z "$best_mode" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+best_res="${best_mode%@*}"
+best_hz="${best_mode#*@}"
+
+# Already at the best resolution — mark done and exit silently
+current_res=$(echo "$output_info" | grep -oP '\d+x\d+@\d+\*' | head -1 | tr -d '*')
+[[ "${current_res%@*}" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+# Show popup
+zenity --question \
+    --title="Velox Linux — Display Setup" \
+    --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
+    --ok-label="Apply ${best_res}" \
+    --cancel-label="Keep current" \
+    --width=380 2>/dev/null
+
+if [[ $? -eq 0 ]]; then
+    kscreen-doctor "output.${output}.mode.${best_res}@${best_hz}" 2>/dev/null \
+    || kscreen-doctor "output.${output}.mode.${best_res}" 2>/dev/null
 fi
+
+touch "$DONE_FLAG"
