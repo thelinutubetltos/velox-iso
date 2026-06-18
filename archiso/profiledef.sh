@@ -32,4 +32,5 @@ file_permissions=(
   ["/usr/bin/calamares-launcher"]="0:0:755"
   ["/home/liveuser/Desktop/install-velox.desktop"]="1000:1000:755"
   ["/home/liveuser/.config/autostart/calamares.desktop"]="1000:1000:755"
+  ["/home/liveuser/.config/autostart/set-resolution.desktop"]="1000:1000:755"
 )
