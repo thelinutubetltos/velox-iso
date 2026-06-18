@@ -37,9 +37,6 @@ if [[ -n "$WAYLAND_DISPLAY" ]] && command -v kscreen-doctor &>/dev/null; then
     best_res=$(_pick_best_res < <(echo "$output_info" | grep -oP '\d+:\d+x\d+@[\d.]+' | sed 's/^[0-9]*://'))
     [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
 
-    current_res=$(echo "$output_info" | grep -oP '\d+x\d+@[\d.]+\*' | head -1 | sed 's/@.*//')
-    [[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
-
     best_index=$(echo "$output_info" | grep -oP "\d+:${best_res}@[\d.]+" | head -1 | cut -d: -f1)
 
     zenity --question \
@@ -58,9 +55,6 @@ elif [[ -n "$DISPLAY" ]] && command -v xrandr &>/dev/null; then
 
     best_res=$(_pick_best_res < <(echo "$xinfo" | awk "/^$output /{p=1;next} p && /^[[:space:]]+[0-9]/{print \$1} p && /^[^ ]/{exit}"))
     [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
-
-    current_res=$(echo "$xinfo" | awk "/^$output /{match(\$0,/[0-9]+x[0-9]+/); print substr(\$0,RSTART,RLENGTH); exit}")
-    [[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
 
     zenity --question \
         --title="Velox Linux — Display Setup" \
