@@ -1,70 +1,174 @@
-#!/usr/bin/env bash
-# velox-set-resolution — first-run display resolution wizard.
-# Detects the best available resolution, asks the user to apply it.
-# Runs once; marks itself done via a flag file.
-# Detects X11 vs Wayland and uses xrandr or kscreen-doctor accordingly.
+#!/usr/bin/env python3
+# velox-set-resolution — first-run resolution wizard using PyQt6.
+# Runs once per user; marks itself done via a flag file.
 
-DONE_FLAG="$HOME/.config/velox-resolution-configured"
-[[ -f "$DONE_FLAG" ]] && exit 0
+import os
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
 
-sleep 5  # wait for KDE display stack to be ready
+done_flag = Path(os.environ.get("HOME", "/root")) / ".config/velox-resolution-configured"
+if done_flag.exists():
+    sys.exit(0)
 
-command -v zenity &>/dev/null || { touch "$DONE_FLAG"; exit 0; }
+time.sleep(5)  # wait for KDE display stack to be ready
 
-strip_ansi() { sed 's/\x1b\[[0-9;]*m//g'; }
+done_flag.parent.mkdir(parents=True, exist_ok=True)
 
-_pick_best_res() {
-    # Given newline-separated list of WxH strings, return best (prefer 1920x1080)
-    local best="" best_px=0
-    while read -r res; do
-        [[ "$res" =~ ^[0-9]+x[0-9]+$ ]] || continue
-        local w="${res%x*}" h="${res#*x}" px
-        px=$(( w * h ))
-        if [[ "$res" == "1920x1080" ]]; then echo "$res"; return; fi
-        if (( px > best_px )); then best_px=$px; best="$res"; fi
-    done
-    echo "$best"
-}
+try:
+    from PyQt6.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+    from PyQt6.QtCore import Qt
+    from PyQt6.QtGui import QFont
+except ImportError:
+    done_flag.touch()
+    sys.exit(0)
 
-if [[ -n "$WAYLAND_DISPLAY" ]] && command -v kscreen-doctor &>/dev/null; then
-    # --- Wayland path ---
-    output_info=$(kscreen-doctor -o 2>/dev/null | strip_ansi)
-    [[ -z "$output_info" ]] && { touch "$DONE_FLAG"; exit 0; }
 
-    output=$(echo "$output_info" | awk '/Output:/{name=$3} /connected/{print name; exit}')
-    [[ -z "$output" ]] && { touch "$DONE_FLAG"; exit 0; }
+def strip_ansi(text):
+    return re.sub(r'\x1b\[[0-9;]*m', '', text)
 
-    best_res=$(_pick_best_res < <(echo "$output_info" | grep -oP '\d+:\d+x\d+@[\d.]+' | sed 's/^[0-9]*://'))
-    [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
 
-    best_index=$(echo "$output_info" | grep -oP "\d+:${best_res}@[\d.]+" | head -1 | cut -d: -f1)
+def get_best_res_wayland():
+    try:
+        raw = subprocess.check_output(['kscreen-doctor', '-o'], stderr=subprocess.DEVNULL, text=True)
+    except Exception:
+        return None, None, None
+    info = strip_ansi(raw)
 
-    zenity --question \
-        --title="Velox Linux — Display Setup" \
-        --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
-        --ok-label="Apply ${best_res}" --cancel-label="Keep current" --width=380 2>/dev/null \
-    && kscreen-doctor "output.${output}.mode.${best_index}" 2>/dev/null
+    output = None
+    for line in info.splitlines():
+        if 'Output:' in line:
+            parts = line.split()
+            idx = parts.index('Output:') if 'Output:' in parts else -1
+            if idx >= 0 and idx + 2 < len(parts):
+                output = parts[idx + 2]
+        if output and 'connected' in line:
+            break
+    if not output:
+        return None, None, None
 
-elif [[ -n "$DISPLAY" ]] && command -v xrandr &>/dev/null; then
-    # --- X11 path ---
-    xinfo=$(xrandr --query 2>/dev/null)
-    [[ -z "$xinfo" ]] && { touch "$DONE_FLAG"; exit 0; }
+    modes = re.findall(r'(\d+):(\d+x\d+)@[\d.]+', info)
+    if not modes:
+        return None, None, None
 
-    output=$(echo "$xinfo" | awk '/ connected/{print $1; exit}')
-    [[ -z "$output" ]] && { touch "$DONE_FLAG"; exit 0; }
+    best_index, best_res, best_px = None, None, 0
+    for idx, res in modes:
+        if res == '1920x1080':
+            best_index, best_res = idx, res
+            break
+        w, h = map(int, res.split('x'))
+        if w * h > best_px:
+            best_px, best_index, best_res = w * h, idx, res
 
-    best_res=$(_pick_best_res < <(echo "$xinfo" | awk "/^$output /{p=1;next} p && /^[[:space:]]+[0-9]/{print \$1} p && /^[^ ]/{exit}"))
-    [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+    return output, best_index, best_res
 
-    zenity --question \
-        --title="Velox Linux — Display Setup" \
-        --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
-        --ok-label="Apply ${best_res}" --cancel-label="Keep current" --width=380 2>/dev/null \
-    && xrandr --output "$output" --mode "$best_res" 2>/dev/null
 
-else
-    touch "$DONE_FLAG"
-    exit 0
-fi
+def get_best_res_x11():
+    try:
+        raw = subprocess.check_output(['xrandr', '--query'], stderr=subprocess.DEVNULL, text=True)
+    except Exception:
+        return None, None
 
-touch "$DONE_FLAG"
+    output = None
+    for line in raw.splitlines():
+        if ' connected' in line:
+            output = line.split()[0]
+            break
+    if not output:
+        return None, None
+
+    best_res, best_px = None, 0
+    in_output = False
+    for line in raw.splitlines():
+        if line.startswith(output):
+            in_output = True
+            continue
+        if in_output:
+            if line and not line[0].isspace():
+                break
+            m = re.match(r'\s+(\d+x\d+)', line)
+            if m:
+                res = m.group(1)
+                if res == '1920x1080':
+                    best_res = res
+                    break
+                w, h = map(int, res.split('x'))
+                if w * h > best_px:
+                    best_px, best_res = w * h, res
+
+    return output, best_res
+
+
+def apply_resolution(output, index_or_res, wayland):
+    if wayland:
+        subprocess.run(['kscreen-doctor', f'output.{output}.mode.{index_or_res}'],
+                       stderr=subprocess.DEVNULL)
+    else:
+        subprocess.run(['xrandr', '--output', output, '--mode', index_or_res],
+                       stderr=subprocess.DEVNULL)
+
+
+def main():
+    wayland = bool(os.environ.get('WAYLAND_DISPLAY'))
+
+    if wayland:
+        output, index, best_res = get_best_res_wayland()
+    else:
+        output, best_res = get_best_res_x11()
+        index = best_res
+
+    if not best_res:
+        done_flag.touch()
+        return
+
+    app = QApplication(sys.argv)
+    app.setApplicationName('Velox Display Setup')
+
+    dlg = QDialog()
+    dlg.setWindowTitle('Velox Linux — Display Setup')
+    dlg.setWindowFlags(dlg.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
+    dlg.setMinimumWidth(400)
+
+    layout = QVBoxLayout(dlg)
+    layout.setSpacing(16)
+    layout.setContentsMargins(24, 24, 24, 20)
+
+    title = QLabel('Display Setup')
+    f = QFont()
+    f.setPointSize(14)
+    f.setBold(True)
+    title.setFont(f)
+    layout.addWidget(title)
+
+    layout.addWidget(QLabel('Best available resolution for your display:'))
+
+    res_label = QLabel(best_res)
+    f2 = QFont()
+    f2.setPointSize(20)
+    f2.setBold(True)
+    res_label.setFont(f2)
+    res_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+    layout.addWidget(res_label)
+
+    layout.addWidget(QLabel('Would you like to apply this resolution now?'))
+
+    btns = QHBoxLayout()
+    keep = QPushButton('Keep current')
+    apply_btn = QPushButton(f'Apply {best_res}')
+    apply_btn.setDefault(True)
+    btns.addWidget(keep)
+    btns.addWidget(apply_btn)
+    layout.addLayout(btns)
+
+    keep.clicked.connect(dlg.reject)
+    apply_btn.clicked.connect(dlg.accept)
+
+    if dlg.exec() == QDialog.DialogCode.Accepted:
+        apply_resolution(output, index, wayland)
+
+    done_flag.touch()
+
+
+main()
