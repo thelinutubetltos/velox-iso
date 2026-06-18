@@ -11,6 +11,15 @@ Terminal=false
 Hidden=false
 X-KDE-autostart-phase=2
 DESKTOPEOF
+    cat > /home/$INSTALL_USER/.config/autostart/set-resolution.desktop << DESKTOPEOF
+[Desktop Entry]
+Type=Application
+Name=Set Resolution
+Exec=/usr/local/bin/velox-set-resolution
+Hidden=false
+NoDisplay=true
+X-KDE-StartupNotify=false
+DESKTOPEOF
     chown -R ${INSTALL_USER}:${INSTALL_USER} /home/${INSTALL_USER}/.config/
 fi
 
