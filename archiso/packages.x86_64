@@ -142,6 +142,7 @@ arch-install-scripts
 xorg-server
 xorg-apps
 xorg-xinit
+xorg-xrandr
 xf86-input-libinput
 mesa
 

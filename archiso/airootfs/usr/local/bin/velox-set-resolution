@@ -2,62 +2,75 @@
 # velox-set-resolution — first-run display resolution wizard.
 # Detects the best available resolution, asks the user to apply it.
 # Runs once; marks itself done via a flag file.
+# Detects X11 vs Wayland and uses xrandr or kscreen-doctor accordingly.
 
 DONE_FLAG="$HOME/.config/velox-resolution-configured"
 [[ -f "$DONE_FLAG" ]] && exit 0
 
-sleep 4  # wait for KDE display stack to be ready
+sleep 5  # wait for KDE display stack to be ready
 
-if ! command -v kscreen-doctor &>/dev/null || ! command -v zenity &>/dev/null; then
+command -v zenity &>/dev/null || { touch "$DONE_FLAG"; exit 0; }
+
+strip_ansi() { sed 's/\x1b\[[0-9;]*m//g'; }
+
+_pick_best_res() {
+    # Given newline-separated list of WxH strings, return best (prefer 1920x1080)
+    local best="" best_px=0
+    while read -r res; do
+        [[ "$res" =~ ^[0-9]+x[0-9]+$ ]] || continue
+        local w="${res%x*}" h="${res#*x}" px
+        px=$(( w * h ))
+        if [[ "$res" == "1920x1080" ]]; then echo "$res"; return; fi
+        if (( px > best_px )); then best_px=$px; best="$res"; fi
+    done
+    echo "$best"
+}
+
+if [[ -n "$WAYLAND_DISPLAY" ]] && command -v kscreen-doctor &>/dev/null; then
+    # --- Wayland path ---
+    output_info=$(kscreen-doctor -o 2>/dev/null | strip_ansi)
+    [[ -z "$output_info" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    output=$(echo "$output_info" | awk '/Output:/{name=$3} /connected/{print name; exit}')
+    [[ -z "$output" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    best_res=$(_pick_best_res < <(echo "$output_info" | grep -oP '\d+:\d+x\d+@[\d.]+' | sed 's/^[0-9]*://'))
+    [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    current_res=$(echo "$output_info" | grep -oP '\d+x\d+@[\d.]+\*' | head -1 | sed 's/@.*//')
+    [[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    best_index=$(echo "$output_info" | grep -oP "\d+:${best_res}@[\d.]+" | head -1 | cut -d: -f1)
+
+    zenity --question \
+        --title="Velox Linux — Display Setup" \
+        --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
+        --ok-label="Apply ${best_res}" --cancel-label="Keep current" --width=380 2>/dev/null \
+    && kscreen-doctor "output.${output}.mode.${best_index}" 2>/dev/null
+
+elif [[ -n "$DISPLAY" ]] && command -v xrandr &>/dev/null; then
+    # --- X11 path ---
+    xinfo=$(xrandr --query 2>/dev/null)
+    [[ -z "$xinfo" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    output=$(echo "$xinfo" | awk '/ connected/{print $1; exit}')
+    [[ -z "$output" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    best_res=$(_pick_best_res < <(echo "$xinfo" | awk "/^$output /{p=1;next} p && /^[[:space:]]+[0-9]/{print \$1} p && /^[^ ]/{exit}"))
+    [[ -z "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    current_res=$(echo "$xinfo" | awk "/^$output /{match(\$0,/[0-9]+x[0-9]+/); print substr(\$0,RSTART,RLENGTH); exit}")
+    [[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
+
+    zenity --question \
+        --title="Velox Linux — Display Setup" \
+        --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
+        --ok-label="Apply ${best_res}" --cancel-label="Keep current" --width=380 2>/dev/null \
+    && xrandr --output "$output" --mode "$best_res" 2>/dev/null
+
+else
     touch "$DONE_FLAG"
     exit 0
-fi
-
-output_info=$(kscreen-doctor -o 2>/dev/null)
-[[ -z "$output_info" ]] && exit 0
-
-# Get the name of the first connected output
-output=$(echo "$output_info" | awk '/Output:/{name=$3} /connected/{print name; exit}')
-[[ -z "$output" ]] && exit 0
-
-# Parse modes as INDEX:WxH@Hz — kscreen-doctor sets mode by index
-best_index=""
-best_res=""
-best_pixels=0
-
-while IFS=: read -r idx res_hz; do
-    res="${res_hz%@*}"
-    w="${res%x*}"; h="${res#*x}"
-    pixels=$(( w * h ))
-    if [[ "$res" == "1920x1080" ]]; then
-        best_index="$idx"
-        best_res="$res"
-        break
-    fi
-    if (( pixels > best_pixels )); then
-        best_pixels=$pixels
-        best_index="$idx"
-        best_res="$res"
-    fi
-done < <(echo "$output_info" | grep -oP '\d+:\d+x\d+@[\d.]+')
-
-[[ -z "$best_index" ]] && { touch "$DONE_FLAG"; exit 0; }
-
-# Get current resolution
-current_res=$(echo "$output_info" | grep -oP '\d+x\d+@[\d.]+\*' | head -1 | tr -d '*')
-current_res="${current_res%@*}"
-[[ "$current_res" == "$best_res" ]] && { touch "$DONE_FLAG"; exit 0; }
-
-# Show popup
-zenity --question \
-    --title="Velox Linux — Display Setup" \
-    --text="<b>Best available resolution for your display:</b>\n\n        <big><b>${best_res}</b></big>\n\nWould you like to apply this resolution now?" \
-    --ok-label="Apply ${best_res}" \
-    --cancel-label="Keep current" \
-    --width=380 2>/dev/null
-
-if [[ $? -eq 0 ]]; then
-    kscreen-doctor "output.${output}.mode.${best_index}" 2>/dev/null
 fi
 
 touch "$DONE_FLAG"
