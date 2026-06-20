@@ -41,6 +41,7 @@ The heart of Velox Linux — a single app for everything.
 - **AUR Security Scanner** — every AUR package is scanned by `velox-pkgcheck` before installation
 - **Auto Keyring Refresh** — checks `archlinux-keyring` age on every launch; silently refreshes it in the background if older than 7 days so pacman GPG errors never happen. This has been a known Arch pain point since 2015 — Velox fixes it automatically
 - **Fix Keyrings** — one-click full keyring repair as a fallback
+- **Partial Update Protection** — checks the package database age before every install; if it's over 1 hour old a warning dialog offers to run a full `pacman -Syu` first, preventing the most common cause of broken Arch systems
 
 ---
 
@@ -152,6 +153,8 @@ After installation, the GRUB menu includes:
 - [x] **Velox Control Center** — software, drivers, kernels, desktops, snapshots, updates
 - [x] **Arch Linux news feed** in update flow — flags recent items before updating
 - [x] **AUR security scanner** (velox-pkgcheck) — scans every AUR package before install
+- [x] **Auto keyring refresh** — silently fixes expired keys on launch and before every update
+- [x] **Partial update protection** — warns before installing into a stale package database
 - [x] **ParallelDownloads = 25** — faster installs on live and installed system
 
 ### Planned
