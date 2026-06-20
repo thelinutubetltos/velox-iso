@@ -81,6 +81,7 @@ qemu-guest-agent
 ###########################################################################
 
 btrfs-progs
+snapper
 e2fsprogs
 exfatprogs
 f2fs-tools
@@ -383,6 +384,7 @@ claude-code
 velox-welcome
 velox-wallpapers
 velox-pkgcheck
+velox-control-center
 
 ###########################################################################
 ####                           PERSONAL REPO
