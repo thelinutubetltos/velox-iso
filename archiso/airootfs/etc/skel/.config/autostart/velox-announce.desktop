@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Velox Welcome
-Exec=velox-welcome
+Name=Velox Control Center Announcement
+Exec=velox-announce
 Terminal=false
 Hidden=false
 X-KDE-autostart-phase=2

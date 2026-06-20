@@ -1,2 +1,8 @@
 [Containments][1][Wallpaper][org.kde.image][General]
-Image=file:///usr/share/wallpapers/Velox-4/
+Image=file:///usr/share/wallpapers/Velox-14/
+
+[Containments][2][Applets][3][Configuration][General]
+icon=/usr/lib/velox-control-center/icons/velox-logo.png
+
+[Containments][2][Applets][5][Configuration][General]
+launchers=applications:systemsettings.desktop,preferred://filemanager,preferred://browser,applications:org.kde.konsole.desktop,applications:velox-control-center.desktop
