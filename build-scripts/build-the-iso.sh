@@ -82,7 +82,7 @@ trap 'on_error "$LINENO" "$BASH_COMMAND"' ERR
 # Build configuration — edit these before building
 #####################################################################
 desktop="kde/plasma"
-veloxVersion='v2026.06'
+veloxVersion='v8.0'
 nvidia_driver="open"          # open | 580xx | 390xx
 chaoticsrepo=true
 clean_pacman_cache="no"       # yes | no
