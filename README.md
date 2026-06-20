@@ -25,11 +25,11 @@ Velox Linux is an **Arch Linux-based KDE Plasma distribution** built for creator
 
 The heart of Velox Linux — a single app for everything.
 
-![Velox Control Center - Home](screenshots/Control center1.png)
+![Velox Control Center - Home](screenshots/Control%20center1.png)
 
-![Velox Control Center - Updates with Arch News Feed](screenshots/control center2.png)
+![Velox Control Center - Updates with Arch News Feed](screenshots/control%20center2.png)
 
-![Velox Control Center - GPU Drivers](screenshots/control center3.png)
+![Velox Control Center - GPU Drivers](screenshots/control%20center3.png)
 
 - **Install apps** — search pacman, Chaotic-AUR, AUR, and Flatpak in one place
 - **GPU Drivers** — install NVIDIA, AMD, and Intel drivers with one click
@@ -42,6 +42,50 @@ The heart of Velox Linux — a single app for everything.
 - **Auto Keyring Refresh** — checks `archlinux-keyring` age on every launch; silently refreshes it in the background if older than 7 days so pacman GPG errors never happen. This has been a known Arch pain point since 2015 — Velox fixes it automatically
 - **Fix Keyrings** — one-click full keyring repair as a fallback
 - **Partial Update Protection** — checks the package database age before every install; if it's over 1 hour old a warning dialog offers to run a full `pacman -Syu` first, preventing the most common cause of broken Arch systems
+
+---
+
+## The Arch Problems We Fixed
+
+Velox isn't opinionated for the sake of it. These four features were built because the same problems have surfaced in Arch forums, community discussions, and Linux press for years — and they all have clean solutions that users shouldn't need to figure out on their own.
+
+### The Research
+
+Before designing the Velox Control Center we reviewed the most common reasons people abandon or avoid Arch Linux:
+
+- **[5 reasons I've never used Arch Linux as a daily driver — XDA Developers](https://www.xda-developers.com/reasons-never-used-arch-linux-daily-driver/)**: update-related breakage and AUR safety were the top concerns raised
+- **[Why you probably shouldn't install Arch Linux — Framework Community](https://community.frame.work/t/why-you-probably-shouldnt-install-arch-linux/74613)**: partial upgrades and keyring errors listed among the leading causes of broken systems
+- **[Common Problems and Issues — Arch Linux Forums](https://bbs.archlinux.org/viewtopic.php?id=130138)**: keyring errors are one of the most frequently recurring support topics
+- **[Pacman update issues — Arch Linux Forums](https://bbs.archlinux.org/viewtopic.php?id=306427)**: dependency conflicts from partial upgrades filling the support threads year after year
+- **[System Maintenance — ArchWiki](https://wiki.archlinux.org/title/System_maintenance)**: Arch's own wiki explicitly states you must read the news feed before upgrading and warns that partial upgrades are unsupported — but nothing in the default tooling enforces either rule
+
+### Fix #1 — Arch Linux News Feed
+
+**Problem:** Arch is a rolling release. Occasionally an update requires a manual step before running `pacman -Syu` — migrating a config file, running a one-off command, or handling a renamed package. The Arch news feed at [archlinux.org/news](https://archlinux.org/news/) is where these are announced. The ArchWiki System Maintenance page explicitly states: *"Before upgrading, users are expected to visit the Arch Linux home page to check the latest news."* But there's no enforcement, and the overwhelming majority of users never check.
+
+**Fix:** The Velox Control Center fetches the live feed from `archlinux.org/feeds/news/` every time you open the Updates tab. Items less than 14 days old are flagged **RECENT** in orange. If there are recent items when you click **Update All**, a warning dialog lists them before the update proceeds — so required manual steps are never missed.
+
+### Fix #2 — Auto Keyring Refresh
+
+**Problem:** GPG keyring errors have been one of the top recurring support topics on the Arch Linux forums since at least 2015 ([Arch Forums — Common Problems](https://bbs.archlinux.org/viewtopic.php?id=130138)). The `archlinux-keyring` package holds the signing keys for all official packages. When it goes stale — because maintainers rotate, new keys are added, or old ones expire — pacman throws `invalid or corrupted package (PGP signature)` errors and refuses to update. This is a design gap that has never been addressed upstream: pacman depends on a keyring it doesn't automatically keep fresh.
+
+Cited as a primary reason new users give up on Arch in both [XDA Developers](https://www.xda-developers.com/reasons-never-used-arch-linux-daily-driver/) and the [Framework Community forums](https://community.frame.work/t/why-you-probably-shouldnt-install-arch-linux/74613).
+
+**Fix:** On every launch, the Control Center silently checks the age of `archlinux-keyring`. If it's older than 7 days it refreshes it in the background via `pkexec` — no user action needed. The **Update All** button also always refreshes the keyring first before running `pacman -Syu`, so updates can never fail on expired keys.
+
+### Fix #3 — AUR Security Scanner
+
+**Problem:** The AUR is unmoderated. Anyone can publish a package, and malicious actors use it to distribute malware. In July 2025, three AUR packages — `librewolf-fix-bin`, `firefox-patch-bin`, and `zen-browser-patched-bin` — were found to be actively malicious, running cryptocurrency miners and exfiltrating credentials. AUR helpers like `paru` and `yay` have no built-in scanning — they download and run whatever PKGBUILD is published.
+
+**Fix:** Every AUR package installed through the Velox Control Center is scanned by `velox-pkgcheck` before installation. It reviews the PKGBUILD for suspicious patterns, outbound network calls, eval/exec usage, and obfuscated code. A severity rating is shown and you can cancel or proceed.
+
+### Fix #4 — Partial Update Protection
+
+**Problem:** Installing a package without first running a full system update is one of the most reliable ways to break Arch Linux. Arch is a rolling release that uses the latest library versions — installing a new package that expects `libfoo.so.6` when your system has `libfoo.so.5` can silently break other software or cause immediate crashes.
+
+The [ArchWiki System Maintenance page](https://wiki.archlinux.org/title/System_maintenance) explicitly states: *"Partial upgrades are unsupported on Arch Linux."* Yet nothing in the default tooling prevents it. This exact failure mode is discussed repeatedly in [Arch Forums — Concerned about updates breaking Arch](https://bbs.archlinux.org/viewtopic.php?id=298177) and [Arch Forums — Pacman update issues](https://bbs.archlinux.org/viewtopic.php?id=306427), and is cited in [XDA Developers](https://www.xda-developers.com/reasons-never-used-arch-linux-daily-driver/) as a primary reason Arch breaks for everyday users.
+
+**Fix:** Every time you install a pacman package through the Control Center it checks when the package database was last synced. If it's been over 1 hour, a warning dialog appears with the option to run a full `pacman -Syu` first — preventing the most common cause of broken Arch installations.
 
 ---
 
