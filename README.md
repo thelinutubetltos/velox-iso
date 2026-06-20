@@ -39,7 +39,8 @@ The heart of Velox Linux — a single app for everything.
 - **One-click System Updates** — pacman + Flatpak in one button
 - **Arch Linux News Feed** — live feed from archlinux.org shown before every update, with recent items flagged so you never miss a required manual step
 - **AUR Security Scanner** — every AUR package is scanned by `velox-pkgcheck` before installation
-- **Fix Keyrings** — one-click keyring repair when pacman GPG errors occur
+- **Auto Keyring Refresh** — checks `archlinux-keyring` age on every launch; silently refreshes it in the background if older than 7 days so pacman GPG errors never happen. This has been a known Arch pain point since 2015 — Velox fixes it automatically
+- **Fix Keyrings** — one-click full keyring repair as a fallback
 
 ---
 
