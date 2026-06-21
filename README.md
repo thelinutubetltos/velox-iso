@@ -6,6 +6,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-velox--iso-5a8160?style=for-the-badge&logo=github)](https://github.com/thelinutubetltos/velox-iso)
 [![YouTube](https://img.shields.io/badge/YouTube-The%20Linux%20Tube-cc3333?style=for-the-badge&logo=youtube)](https://youtube.com/@thelinuxtube)
+[![Discord](https://img.shields.io/badge/Discord-The%20Linux%20Tube-5865F2?style=for-the-badge&logo=discord)](https://discord.gg/htBPZ3Sb)
 [![SourceForge](https://img.shields.io/badge/Download-SourceForge-ff6600?style=for-the-badge&logo=sourceforge)](https://sourceforge.net/projects/velox-linux/)
 [![Repo](https://img.shields.io/badge/Package%20Repo-velox__repo-5a8160?style=for-the-badge)](https://thelinutubetltos.github.io/velox_repo)
 
@@ -242,6 +243,7 @@ The ISO will be output to `~/velox-Out/`.
 | Download | [SourceForge](https://sourceforge.net/projects/velox-linux/) |
 | Package Repository | [velox_repo](https://github.com/thelinutubetltos/velox_repo) |
 | YouTube | [The Linux Tube](https://youtube.com/@thelinuxtube) |
+| Discord | [The Linux Tube](https://discord.gg/htBPZ3Sb) |
 | Bug Reports | [GitHub Issues](https://github.com/thelinutubetltos/velox-iso/issues) |
 
 ---
