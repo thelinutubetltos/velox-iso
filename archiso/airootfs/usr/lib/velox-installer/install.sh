@@ -29,12 +29,16 @@ echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID ROOT_FSTYPE
 
 # Detect NVIDIA GPU and install proprietary drivers
 HAS_NVIDIA=false
+GPU_PARAMS=""
 if lspci | grep -qi nvidia; then
     HAS_NVIDIA=true
+    GPU_PARAMS=" nvidia-drm.modeset=1"
     echo "NVIDIA GPU detected — installing proprietary drivers"
     pacman -S --noconfirm --needed nvidia-open-dkms nvidia-utils nvidia-settings
     sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
     mkinitcpio -p linux-velox
+    # Persist modeset param so grub-mkconfig also produces correct entries
+    sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
 fi
 
 # Install grub
@@ -64,7 +68,7 @@ set timeout=10
 
 menuentry "Velox Linux" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash
+    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash${GPU_PARAMS}
     initrd ${BOOT_PREFIX}/boot/initramfs-linux-velox.img
 }
 GRUBEOF
