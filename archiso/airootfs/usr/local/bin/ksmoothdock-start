@@ -1,0 +1,9 @@
+#!/bin/bash
+# Wait for KDE to be ready then start KSmoothDock.
+# Restarts once after 12s so it picks up the final screen geometry.
+sleep 5
+ksmoothdock &
+sleep 12
+pkill -x ksmoothdock
+sleep 1
+exec ksmoothdock

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=KSmoothDock
-Exec=bash -c "sleep 3 && ksmoothdock"
+Exec=/usr/local/bin/ksmoothdock-start
 Terminal=false
 Hidden=false
 X-KDE-autostart-phase=2
