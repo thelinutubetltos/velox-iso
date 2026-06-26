@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=KSmoothDock
+Exec=ksmoothdock
+Terminal=false
+Hidden=false
+X-KDE-autostart-phase=2

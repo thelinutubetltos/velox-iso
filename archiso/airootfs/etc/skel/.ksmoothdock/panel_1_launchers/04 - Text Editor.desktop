@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=kate
+Icon=kate
+Name=Text Editor
+Terminal=false
+Type=Application
