@@ -1,10 +1,4 @@
 #!/bin/bash
 # Force XWayland mode so EWMH dock hints are used for positioning.
-# Restart once after display settles — KDE changes resolution shortly after
-# desktop load, which shifts the dock if it started before the change.
 sleep 3
-env QT_QPA_PLATFORM=xcb ksmoothdock &
-sleep 5
-pkill ksmoothdock || true
-sleep 1
 exec env QT_QPA_PLATFORM=xcb ksmoothdock

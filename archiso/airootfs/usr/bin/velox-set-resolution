@@ -167,6 +167,9 @@ def main():
 
     if dlg.exec() == QDialog.DialogCode.Accepted:
         apply_resolution(output, index, wayland)
+        time.sleep(1)
+        subprocess.run(['pkill', 'ksmoothdock'], stderr=subprocess.DEVNULL)
+        subprocess.Popen(['env', 'QT_QPA_PLATFORM=xcb', 'ksmoothdock'])
 
     done_flag.touch()
 
