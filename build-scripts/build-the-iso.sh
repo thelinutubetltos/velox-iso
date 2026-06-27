@@ -82,7 +82,7 @@ trap 'on_error "$LINENO" "$BASH_COMMAND"' ERR
 # Build configuration — edit these before building
 #####################################################################
 desktop="kde/plasma"
-veloxVersion='v8.0'
+veloxVersion='v26.06.26'
 nvidia_driver="open"          # open | 580xx | 390xx
 chaoticsrepo=true
 clean_pacman_cache="no"       # yes | no
@@ -187,14 +187,7 @@ prepare_build_tree() {
 
     local skel_dir="${buildFolder}/archiso/airootfs/etc/skel"
 
-    # Phase 3 already copied the full source archiso (including skel) to the build folder.
-    # Just refresh .bashrc from edu-shells so we get latest shell aliases,
-    # then append fastfetch so it runs on every terminal open.
-    echo "Fetching latest .bashrc..."
-    wget -q "https://raw.githubusercontent.com/erikdubois/edu-shells/refs/heads/main/etc/skel/.bashrc-latest" \
-        -O "${skel_dir}/.bashrc" \
-        || { log_error "Failed to download .bashrc from edu-shells"; exit 1; }
-
+    # .bashrc is versioned in the repo — append fastfetch so it runs on every terminal open.
     echo "" >> "${skel_dir}/.bashrc"
     echo "fastfetch" >> "${skel_dir}/.bashrc"
 
