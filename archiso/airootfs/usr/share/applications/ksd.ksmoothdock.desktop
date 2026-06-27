@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=KSmoothDock
-GenericName=Desktop Panel
-Icon=user-desktop
-Exec=env QT_QPA_PLATFORM=xcb ksmoothdock
-Terminal=false
-Categories=Qt;KDE;Utility;
