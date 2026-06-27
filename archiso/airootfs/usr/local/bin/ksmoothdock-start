@@ -1,9 +1,4 @@
 #!/bin/bash
-# Wait for KDE to be ready then start KSmoothDock.
-# Restarts once after 12s so it picks up the final screen geometry.
-sleep 5
-ksmoothdock &
-sleep 12
-pkill -x ksmoothdock
-sleep 1
-exec ksmoothdock
+# Force XWayland mode so EWMH dock hints are used for positioning.
+sleep 3
+exec env QT_QPA_PLATFORM=xcb ksmoothdock
