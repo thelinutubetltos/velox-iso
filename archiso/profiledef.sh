@@ -5,7 +5,7 @@ iso_name="velox"
 iso_label="VELOX_$(date +%Y%m)"
 iso_publisher="Velox Linux <https://github.com/thelinuxtubetltos/velox-iso>"
 iso_application="Velox Linux Live/Rescue DVD"
-iso_version="v8.0"
+iso_version="v26.06.26"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('bios.syslinux'
@@ -33,6 +33,7 @@ file_permissions=(
   ["/usr/bin/calamares-launcher"]="0:0:755"
   ["/usr/bin/velox-live-start"]="0:0:755"
   ["/usr/bin/velox-set-resolution"]="0:0:755"
+  ["/usr/local/bin/ksmoothdock-start"]="0:0:755"
   ["/home/liveuser/Desktop/install-velox.desktop"]="1000:1000:755"
   ["/home/liveuser/.config/autostart/calamares.desktop"]="1000:1000:755"
 )
