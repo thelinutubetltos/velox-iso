@@ -37,6 +37,7 @@ file_permissions=(
   ["/usr/bin/velox-live-start"]="0:0:755"
   ["/usr/bin/velox-set-resolution"]="0:0:755"
   ["/usr/bin/velox-reload-desktop"]="0:0:755"
+  ["/usr/share/sddm/scripts/Xsetup"]="0:0:755"
   ["/home/liveuser/.config/openbox/autostart"]="1000:1000:755"
   ["/home/liveuser/.config/openbox/rc.xml"]="1000:1000:644"
   ["/home/liveuser/Desktop/install-velox.desktop"]="1000:1000:755"

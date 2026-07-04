@@ -1,0 +1,10 @@
+#!/bin/sh
+# Xsetup - run as root before the login dialog appears
+
+# Set best available resolution for the SDDM greeter.
+# Tries 1920x1080 first; falls back to xrandr --auto if unavailable.
+OUTPUT=$(xrandr --query 2>/dev/null | awk '/ connected/{print $1; exit}')
+if [ -n "$OUTPUT" ]; then
+    xrandr --output "$OUTPUT" --mode 1920x1080 2>/dev/null || \
+    xrandr --output "$OUTPUT" --auto 2>/dev/null || true
+fi

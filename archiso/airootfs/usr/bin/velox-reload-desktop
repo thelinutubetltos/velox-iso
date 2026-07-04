@@ -1,22 +1,23 @@
 #!/bin/bash
-# Reload desktop wallpaper/environment after a resolution change.
+# Reload desktop environment after a resolution change.
 
-sleep 1  # let the display finish reconfiguring
+sleep 2  # let the display finish reconfiguring
 
 if pgrep -x plasmashell > /dev/null 2>&1; then
-    # KDE Plasma: tell every containment to reload its config (re-scales wallpaper)
-    qdbus org.kde.plasmashell /PlasmaShell \
+    # KDE Plasma: reload wallpaper via plasmashell D-Bus
+    dbus-send --session --dest=org.kde.plasmashell \
+        --type=method_call /PlasmaShell \
         org.kde.PlasmaShell.evaluateScript \
-        'var d=desktops();for(var i=0;i<d.length;i++){d[i].reloadConfig();}' 2>/dev/null
+        string:'var d=desktops();for(var i=0;i<d.length;i++){d[i].reloadConfig();}' 2>/dev/null
 
 elif pgrep -x cinnamon > /dev/null 2>&1; then
-    # Cinnamon: toggle picture-uri so nemo-desktop re-renders at new size
-    uri=$(gsettings get org.cinnamon.desktop.background picture-uri 2>/dev/null | tr -d "'")
-    if [ -n "$uri" ]; then
-        gsettings set org.cinnamon.desktop.background picture-uri '' 2>/dev/null
-        sleep 0.4
-        gsettings set org.cinnamon.desktop.background picture-uri "$uri" 2>/dev/null
-    fi
+    # Cinnamon Wayland: the background surface is sized at compositor startup and
+    # does not resize when the display resolution changes. A full session logout is
+    # required so SDDM relaunches Cinnamon fresh at the new resolution.
+    # ApplyMonitorsConfig (method=2) already wrote cinnamon-monitors.xml, so the
+    # next Cinnamon startup reads it and starts at 1920x1080.
+    # Use cinnamon-session-quit for a clean logout so SDDM restarts the greeter properly.
+    cinnamon-session-quit --logout --no-prompt 2>/dev/null
 
 else
     # Fallback for X11/OpenBox live session
