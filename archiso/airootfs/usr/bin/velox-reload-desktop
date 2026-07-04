@@ -1,0 +1,26 @@
+#!/bin/bash
+# Reload desktop wallpaper/environment after a resolution change.
+
+sleep 1  # let the display finish reconfiguring
+
+if pgrep -x plasmashell > /dev/null 2>&1; then
+    # KDE Plasma: tell every containment to reload its config (re-scales wallpaper)
+    qdbus org.kde.plasmashell /PlasmaShell \
+        org.kde.PlasmaShell.evaluateScript \
+        'var d=desktops();for(var i=0;i<d.length;i++){d[i].reloadConfig();}' 2>/dev/null
+
+elif pgrep -x cinnamon > /dev/null 2>&1; then
+    # Cinnamon: toggle picture-uri so nemo-desktop re-renders at new size
+    uri=$(gsettings get org.cinnamon.desktop.background picture-uri 2>/dev/null | tr -d "'")
+    if [ -n "$uri" ]; then
+        gsettings set org.cinnamon.desktop.background picture-uri '' 2>/dev/null
+        sleep 0.4
+        gsettings set org.cinnamon.desktop.background picture-uri "$uri" 2>/dev/null
+    fi
+
+else
+    # Fallback for X11/OpenBox live session
+    for wall in /usr/share/wallpapers/Velox-*/contents/images/3840x2160.png; do
+        [ -f "$wall" ] && feh --bg-scale "$wall" && break
+    done
+fi

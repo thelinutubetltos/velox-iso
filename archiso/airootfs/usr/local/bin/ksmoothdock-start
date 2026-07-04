@@ -1,4 +1,0 @@
-#!/bin/bash
-# Force XWayland mode so EWMH dock hints are used for positioning.
-sleep 3
-exec env QT_QPA_PLATFORM=xcb ksmoothdock

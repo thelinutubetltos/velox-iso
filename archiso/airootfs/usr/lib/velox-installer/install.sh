@@ -1,5 +1,5 @@
 #!/bin/bash
-exec > /tmp/velox-install.log 2>&1
+exec > /var/log/velox-install.log 2>&1
 set -x
 
 # Find and copy kernel to /boot
@@ -115,18 +115,4 @@ fi
 # Disable autologin on installed system
 sed -i 's/^User=liveuser/User=/' /etc/sddm.conf.d/kde_settings.conf
 
-# Add velox-announce first-boot autostart for installed user
-INSTALL_USER=$(ls /mnt/home | grep -v lost+found | head -1)
-if [ -n "$INSTALL_USER" ]; then
-    mkdir -p /mnt/home/$INSTALL_USER/.config/autostart
-    cat > /mnt/home/$INSTALL_USER/.config/autostart/velox-announce.desktop << AUTOEOF
-[Desktop Entry]
-Type=Application
-Name=Velox Control Center Announcement
-Exec=velox-announce
-Terminal=false
-Hidden=false
-X-KDE-autostart-phase=2
-AUTOEOF
-    chown -R $INSTALL_USER:$INSTALL_USER /mnt/home/$INSTALL_USER/.config/
-fi
+# Note: autostart files are set up by copy-autostart.sh in shellprocess-post

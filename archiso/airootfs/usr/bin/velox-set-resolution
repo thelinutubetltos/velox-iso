@@ -1,177 +1,250 @@
 #!/usr/bin/env python3
-# velox-set-resolution — first-run resolution wizard using PyQt6.
-# Runs once per user; marks itself done via a flag file.
-
-import os
-import re
-import subprocess
-import sys
-import time
+import glob, os, re, subprocess, sys, time, traceback
 from pathlib import Path
+
+LOG = Path("/tmp/velox-set-resolution.log")
+def log(msg):
+    with open(LOG, 'a') as f:
+        f.write(f"{time.strftime('%H:%M:%S')} {msg}\n")
 
 done_flag = Path(os.environ.get("HOME", "/root")) / ".config/velox-resolution-configured"
 if done_flag.exists():
     sys.exit(0)
-
-time.sleep(5)  # wait for KDE display stack to be ready
-
 done_flag.parent.mkdir(parents=True, exist_ok=True)
 
-try:
-    from PyQt6.QtWidgets import QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
-    from PyQt6.QtCore import Qt
-    from PyQt6.QtGui import QFont
-except ImportError:
-    done_flag.touch()
-    sys.exit(0)
+log(f"starting, DISPLAY={os.environ.get('DISPLAY')}, WAYLAND_DISPLAY={os.environ.get('WAYLAND_DISPLAY')}")
 
 
-def strip_ansi(text):
-    return re.sub(r'\x1b\[[0-9;]*m', '', text)
-
-
-def get_best_res_wayland():
+def get_muffin_proxy():
     try:
-        raw = subprocess.check_output(['kscreen-doctor', '-o'], stderr=subprocess.DEVNULL, text=True)
-    except Exception:
-        return None, None, None
-    info = strip_ansi(raw)
-
-    output = None
-    for line in info.splitlines():
-        if 'Output:' in line:
-            parts = line.split()
-            idx = parts.index('Output:') if 'Output:' in parts else -1
-            if idx >= 0 and idx + 2 < len(parts):
-                output = parts[idx + 2]
-        if output and 'connected' in line:
-            break
-    if not output:
-        return None, None, None
-
-    modes = re.findall(r'(\d+):(\d+x\d+)@[\d.]+', info)
-    if not modes:
-        return None, None, None
-
-    best_index, best_res, best_px = None, None, 0
-    for idx, res in modes:
-        if res == '1920x1080':
-            best_index, best_res = idx, res
-            break
-        w, h = map(int, res.split('x'))
-        if w * h > best_px:
-            best_px, best_index, best_res = w * h, idx, res
-
-    return output, best_index, best_res
+        import gi
+        gi.require_version('Gio', '2.0')
+        from gi.repository import Gio
+        bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+        proxy = Gio.DBusProxy.new_sync(
+            bus, Gio.DBusProxyFlags.NONE, None,
+            'org.cinnamon.Muffin.DisplayConfig',
+            '/org/cinnamon/Muffin/DisplayConfig',
+            'org.cinnamon.Muffin.DisplayConfig',
+            None
+        )
+        return proxy
+    except Exception as e:
+        log(f"muffin proxy failed: {e}")
+        return None
 
 
-def get_best_res_x11():
+def get_muffin_info(proxy):
+    try:
+        from gi.repository import Gio
+        state = proxy.call_sync('GetCurrentState', None, Gio.DBusCallFlags.NONE, -1, None)
+        serial, monitors, logical_monitors, props = state.unpack()
+        if not monitors:
+            return None
+        conn_info = monitors[0][0]
+        modes = monitors[0][1]
+        connector = conn_info[0]
+        resolutions, current_res = [], None
+        for mode in modes:
+            mid, w, h = mode[0], int(mode[1]), int(mode[2])
+            props_dict = mode[6] if len(mode) > 6 else {}
+            res = f"{w}x{h}"
+            if res not in resolutions:
+                resolutions.append(res)
+            if props_dict.get('is-current'):
+                current_res = res
+        log(f"muffin: connector={connector}, current={current_res}, modes={len(modes)}, resolutions={resolutions[:6]}")
+        return {'serial': serial, 'connector': connector, 'modes': modes,
+                'resolutions': resolutions, 'current': current_res}
+    except Exception as e:
+        log(f"muffin get_info failed: {e}")
+        return None
+
+
+def get_xrandr_resolutions():
     try:
         raw = subprocess.check_output(['xrandr', '--query'], stderr=subprocess.DEVNULL, text=True)
-    except Exception:
-        return None, None
-
-    output = None
-    for line in raw.splitlines():
-        if ' connected' in line:
-            output = line.split()[0]
-            break
-    if not output:
-        return None, None
-
-    best_res, best_px = None, 0
-    in_output = False
-    for line in raw.splitlines():
-        if line.startswith(output):
-            in_output = True
-            continue
-        if in_output:
-            if line and not line[0].isspace():
+        output = None
+        for line in raw.splitlines():
+            if ' connected' in line:
+                output = line.split()[0]
                 break
-            m = re.match(r'\s+(\d+x\d+)', line)
-            if m:
-                res = m.group(1)
-                if res == '1920x1080':
-                    best_res = res
+        if not output:
+            return None, []
+        resolutions = []
+        in_output = False
+        for line in raw.splitlines():
+            if line.startswith(output):
+                in_output = True
+                continue
+            if in_output:
+                if line and not line[0].isspace():
                     break
-                w, h = map(int, res.split('x'))
-                if w * h > best_px:
-                    best_px, best_res = w * h, res
+                m = re.match(r'\s+(\d+x\d+)', line)
+                if m and m.group(1) not in resolutions:
+                    resolutions.append(m.group(1))
+        log(f"xrandr: output={output}, resolutions={resolutions[:5]}")
+        return output, resolutions
+    except Exception as e:
+        log(f"xrandr failed: {e}")
+        return None, []
 
-    return output, best_res
+
+def best_res(resolutions):
+    if '1920x1080' in resolutions:
+        return '1920x1080'
+    best, best_px = None, 0
+    for res in resolutions:
+        w, h = map(int, res.split('x'))
+        if w * h > best_px:
+            best_px, best = w * h, res
+    return best
 
 
-def apply_resolution(output, index_or_res, wayland):
-    if wayland:
-        subprocess.run(['kscreen-doctor', f'output.{output}.mode.{index_or_res}'],
-                       stderr=subprocess.DEVNULL)
-    else:
-        subprocess.run(['xrandr', '--output', output, '--mode', index_or_res],
-                       stderr=subprocess.DEVNULL)
+def apply_via_muffin(proxy, info, target_res):
+    tw, th = map(int, target_res.split('x'))
+    try:
+        from gi.repository import Gio, GLib
+        mode_id = None
+        for mode in info['modes']:
+            mid, w, h = mode[0], int(mode[1]), int(mode[2])
+            if w == tw and h == th:
+                mode_id = mid
+                break
+        if not mode_id:
+            log(f"muffin: no mode for {target_res}")
+            return False
+        log(f"muffin: applying {target_res} mode={mode_id} on {info['connector']}")
+        variant = GLib.Variant(
+            '(uua(iiduba(ssa{sv}))a{sv})',
+            (info['serial'], 2, [(0, 0, 1.0, 0, True, [(info['connector'], mode_id, {})])], {})
+        )
+        proxy.call_sync('ApplyMonitorsConfig', variant, Gio.DBusCallFlags.NONE, -1, None)
+        log(f"muffin: ApplyMonitorsConfig OK")
+        return True
+    except Exception as e:
+        log(f"muffin apply failed: {e}")
+        return False
+
+
+def apply_via_xrandr(xoutput, target_res):
+    log(f"xrandr: --output {xoutput} --mode {target_res}")
+    r = subprocess.run(['xrandr', '--output', xoutput, '--mode', target_res],
+                       capture_output=True, text=True)
+    log(f"xrandr: rc={r.returncode} {r.stderr.strip()}")
+    return r.returncode == 0
+
+
+def refresh_wallpaper_gsettings(env):
+    """For Cinnamon sessions: force nemo-desktop to re-render at new resolution."""
+    try:
+        uri = subprocess.check_output(
+            ['gsettings', 'get', 'org.cinnamon.desktop.background', 'picture-uri'],
+            env=env, text=True, stderr=subprocess.DEVNULL).strip().strip("'\"")
+        if not uri:
+            log("gsettings refresh: no URI found")
+            return
+        log(f"gsettings refresh: uri={uri}")
+        time.sleep(3)  # let Cinnamon/Muffin finish reconfiguring display
+        subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
+                        'picture-options', 'zoom'], env=env, stderr=subprocess.DEVNULL)
+        time.sleep(0.2)
+        # Clear URI first — forces a real change event so nemo-desktop re-renders
+        subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
+                        'picture-uri', ''], env=env, stderr=subprocess.DEVNULL)
+        time.sleep(0.5)
+        subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
+                        'picture-uri', uri], env=env, stderr=subprocess.DEVNULL)
+        log(f"gsettings wallpaper refreshed: {uri}")
+    except Exception as e:
+        log(f"gsettings wallpaper refresh failed: {e}")
+
+
+def refresh_wallpaper_feh(env):
+    """For X11/openbox live sessions: re-run feh so the new screen size gets filled."""
+    # Pick the lowest-numbered available Velox wallpaper
+    candidates = sorted(glob.glob('/usr/share/wallpapers/Velox-*/contents/images/3840x2160.png'))
+    if not candidates:
+        log("feh refresh: no Velox wallpapers found")
+        return
+    wallpaper = candidates[0]
+    r = subprocess.run(['feh', '--bg-scale', wallpaper], env=env,
+                       capture_output=True, text=True)
+    log(f"feh refresh: rc={r.returncode} wall={wallpaper}")
 
 
 def main():
-    wayland = bool(os.environ.get('WAYLAND_DISPLAY'))
+    env = os.environ.copy()
+    if 'DISPLAY' not in env:
+        env['DISPLAY'] = ':0'
 
-    if wayland:
-        output, index, best_res = get_best_res_wayland()
+    # Try Muffin with retries (up to ~12s total)
+    proxy, muffin_info = None, None
+    for attempt in range(4):
+        proxy = get_muffin_proxy()
+        if proxy:
+            muffin_info = get_muffin_info(proxy)
+            if muffin_info:
+                break
+        log(f"muffin not ready (attempt {attempt+1}), retrying...")
+        time.sleep(3)
+
+    if muffin_info:
+        resolutions = muffin_info['resolutions']
+        current_res = muffin_info['current']
+        xoutput = None
     else:
-        output, best_res = get_best_res_x11()
-        index = best_res
+        log("muffin unavailable, falling back to xrandr")
+        xoutput, resolutions = get_xrandr_resolutions()
+        current_res = resolutions[0] if resolutions else None
 
-    if not best_res:
+    if not resolutions:
+        log("no resolutions found, exiting")
         done_flag.touch()
         return
 
-    app = QApplication(sys.argv)
-    app.setApplicationName('Velox Display Setup')
+    target = best_res(resolutions)
+    if not target:
+        log("no best resolution found")
+        done_flag.touch()
+        return
 
-    dlg = QDialog()
-    dlg.setWindowTitle('Velox Linux — Display Setup')
-    dlg.setWindowFlags(dlg.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
-    dlg.setMinimumWidth(400)
+    if target == current_res:
+        log(f"already at best resolution {target}, nothing to do")
+        done_flag.touch()
+        return
 
-    layout = QVBoxLayout(dlg)
-    layout.setSpacing(16)
-    layout.setContentsMargins(24, 24, 24, 20)
+    log(f"target={target}, current={current_res}")
 
-    title = QLabel('Display Setup')
-    f = QFont()
-    f.setPointSize(14)
-    f.setBold(True)
-    title.setFont(f)
-    layout.addWidget(title)
+    result = subprocess.run(
+        ['zenity', '--question',
+         '--title=Velox Linux — Display Setup',
+         f'--text=Best available resolution detected:\n\n<b><big>{target}</big></b>\n\nApply this resolution now?',
+         '--ok-label=Apply',
+         '--cancel-label=Keep current',
+         '--width=360'],
+        env=env
+    )
 
-    layout.addWidget(QLabel('Best available resolution for your display:'))
-
-    res_label = QLabel(best_res)
-    f2 = QFont()
-    f2.setPointSize(20)
-    f2.setBold(True)
-    res_label.setFont(f2)
-    res_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-    layout.addWidget(res_label)
-
-    layout.addWidget(QLabel('Would you like to apply this resolution now?'))
-
-    btns = QHBoxLayout()
-    keep = QPushButton('Keep current')
-    apply_btn = QPushButton(f'Apply {best_res}')
-    apply_btn.setDefault(True)
-    btns.addWidget(keep)
-    btns.addWidget(apply_btn)
-    layout.addLayout(btns)
-
-    keep.clicked.connect(dlg.reject)
-    apply_btn.clicked.connect(dlg.accept)
-
-    if dlg.exec() == QDialog.DialogCode.Accepted:
-        apply_resolution(output, index, wayland)
-        time.sleep(1)
-        subprocess.run(['pkill', 'ksmoothdock'], stderr=subprocess.DEVNULL)
-        subprocess.Popen(['env', 'QT_QPA_PLATFORM=xcb', 'ksmoothdock'])
+    if result.returncode == 0:
+        log("user clicked Apply")
+        # Pre-set zoom before the resolution change so Cinnamon renders correctly
+        # if it auto-re-renders during the config change
+        subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
+                        'picture-options', 'zoom'], env=env, stderr=subprocess.DEVNULL)
+        applied = False
+        if proxy and muffin_info:
+            applied = apply_via_muffin(proxy, muffin_info, target)
+        if not applied and xoutput:
+            applied = apply_via_xrandr(xoutput, target)
+        if applied:
+            log("resolution applied, launching velox-reload-desktop")
+            subprocess.Popen(['velox-reload-desktop'], env=env)
+    else:
+        log("user cancelled")
 
     done_flag.touch()
+    log("done")
 
 
 main()

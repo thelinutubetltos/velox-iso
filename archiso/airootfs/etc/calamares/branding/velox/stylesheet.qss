@@ -2,11 +2,47 @@
 QWidget {
     background-color: #1a1a1a;
     color: #e0e0e0;
+    margin: 0px;
+    padding: 0px;
+}
+
+QMainWindow, QDialog {
+    background-color: #1a1a1a;
+    border: none;
+    margin: 0px;
+    padding: 0px;
 }
 
 QFrame, QStackedWidget, QAbstractScrollArea {
     background-color: #1a1a1a;
     color: #e0e0e0;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+    qproperty-frameShape: 0;
+    qproperty-frameShadow: 16;
+}
+
+QAbstractScrollArea::viewport {
+    background-color: #1a1a1a;
+}
+
+QSplitter {
+    background-color: #1a1a1a;
+    border: none;
+}
+
+QSplitter::handle {
+    background-color: #1a1a1a;
+    width: 0px;
+    height: 0px;
+}
+
+#mainApp, #backgroundWidget {
+    background-color: #1a1a1a;
+    border: none;
+    margin: 0px;
+    padding: 0px;
 }
 
 QTextBrowser, QTextEdit, QPlainTextEdit {
@@ -122,6 +158,31 @@ QRadioButton::indicator:unchecked, QCheckBox::indicator:unchecked {
     background-color: #2a2a2a;
     border: 2px solid #6dab74;
     border-radius: 3px;
+}
+
+/* Netinstall tree checkboxes (rendered as QTreeView::indicator) */
+QTreeView::indicator:unchecked {
+    background-color: #2a2a2a;
+    border: 2px solid #6dab74;
+    border-radius: 3px;
+    width: 14px;
+    height: 14px;
+}
+
+QTreeView::indicator:checked {
+    background-color: #6dab74;
+    border: 2px solid #6dab74;
+    border-radius: 3px;
+    width: 14px;
+    height: 14px;
+}
+
+QTreeView::indicator:indeterminate {
+    background-color: #4a8a50;
+    border: 2px solid #6dab74;
+    border-radius: 3px;
+    width: 14px;
+    height: 14px;
 }
 
 /* Sidebar */

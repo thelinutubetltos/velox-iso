@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=KSmoothDock
-Exec=/usr/local/bin/ksmoothdock-start
-Terminal=false
-Hidden=false
-X-KDE-autostart-phase=2

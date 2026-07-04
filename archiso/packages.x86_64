@@ -148,6 +148,14 @@ xf86-input-libinput
 mesa
 
 ###########################################################################
+####                           LIVE SESSION
+####   Openbox provides a minimal WM for the Calamares installer session
+###########################################################################
+
+openbox
+feh
+
+###########################################################################
 ####                           NVIDIA
 ####   Removed from live ISO — installed post-install via install.sh
 ####   based on GPU detection. Live environment uses nouveau (mesa).
@@ -201,7 +209,7 @@ udiskie
 libmtp
 xdg-utils
 xdg-user-dirs
-xdg-desktop-portal-kde
+xdg-desktop-portal
 
 ###########################################################################
 ####                           PRINTING
@@ -213,35 +221,6 @@ cups-pdf
 ghostscript
 gsfonts
 gutenprint
-print-manager
-
-###########################################################################
-####                           KDE PLASMA
-###########################################################################
-
-plasma-desktop
-plasma-nm
-plasma-pa
-plasma-systemmonitor
-kdeplasma-addons
-kwin
-ksmoothdock
-konsole
-dolphin
-kate
-kdialog
-ark
-spectacle
-okular
-gwenview
-kcalc
-kscreen
-kinfocenter
-plasma-disks
-bluedevil
-power-profiles-daemon
-polkit-kde-agent
-accountsservice
 
 ###########################################################################
 ####                           DISPLAY MANAGER
@@ -309,6 +288,8 @@ tldr
 inetutils
 laptop-detect
 dialog
+accountsservice
+power-profiles-daemon
 
 ###########################################################################
 ####                           FONTS
@@ -330,10 +311,8 @@ adobe-source-sans-fonts
 ####                           THEMES & ICONS
 ###########################################################################
 
-kvantum
-candy-icons-git
-papirus-icon-theme
 vimix-cursors
+breeze-icons
 
 ###########################################################################
 ####                           NEMESIS REPO
@@ -355,7 +334,6 @@ chaotic-mirrorlist
 ###########################################################################
 
 calamares
-#velox-calamares-config
 
 ###########################################################################
 ####                           MISC UTILITIES
@@ -367,6 +345,7 @@ fish
 alacritty
 poppler-glib
 poppler-qt5
+qt6ct
 vte4
 libgepub
 libgsf
@@ -383,9 +362,3 @@ claude-code
 velox-wallpapers
 velox-pkgcheck
 velox-control-center
-
-###########################################################################
-####                           PERSONAL REPO
-###########################################################################
-
-#velox-dummy-git

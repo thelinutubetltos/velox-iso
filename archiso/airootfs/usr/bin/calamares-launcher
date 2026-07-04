@@ -1,8 +1,30 @@
 #!/bin/bash
 export HOME=/root
-export XDG_CONFIG_HOME=/root/.config
+
+# /tmp is always a writable tmpfs — use it for the qt6ct config
+mkdir -p /tmp/velox-qt6ct/qt6ct/colors
+cat > /tmp/velox-qt6ct/qt6ct/qt6ct.conf << 'CONF'
+[Appearance]
+color_scheme_path=/tmp/velox-qt6ct/qt6ct/colors/velox-dark.conf
+custom_palette=true
+icon_theme=breeze
+style=Fusion
+
+[Interface]
+stylesheets_have_priority=false
+CONF
+
+cat > /tmp/velox-qt6ct/qt6ct/colors/velox-dark.conf << 'CONF'
+[ColorScheme]
+active_colors=#ffe0e0e0, #ff2a2a2a, #ff2a2a2a, #ff222222, #ff111111, #ff1e1e1e, #ffe0e0e0, #ffffffff, #ffe0e0e0, #ff1a1a1a, #ff1a1a1a, #ff0a0a0a, #ff6dab74, #ffffffff, #ff6dab74, #ff4a8a50, #ff222222, #ff000000, #ff2a2a2a, #ffe0e0e0, #ff555555
+disabled_colors=#ff707070, #ff2a2a2a, #ff2a2a2a, #ff222222, #ff111111, #ff1e1e1e, #ff707070, #ffffffff, #ff707070, #ff1a1a1a, #ff1a1a1a, #ff0a0a0a, #ff3a5a3e, #ffaaaaaa, #ff6dab74, #ff4a8a50, #ff222222, #ff000000, #ff2a2a2a, #ff707070, #ff444444
+inactive_colors=#ffe0e0e0, #ff2a2a2a, #ff2a2a2a, #ff222222, #ff111111, #ff1e1e1e, #ffe0e0e0, #ffffffff, #ffe0e0e0, #ff1a1a1a, #ff1a1a1a, #ff0a0a0a, #ff6dab74, #ffffffff, #ff6dab74, #ff4a8a50, #ff222222, #ff000000, #ff2a2a2a, #ffe0e0e0, #ff555555
+CONF
+
+export XDG_CONFIG_HOME=/tmp/velox-qt6ct
 export XDG_DATA_HOME=/root/.local/share
-export QT_QPA_PLATFORMTHEME=kde
+export QT_QPA_PLATFORMTHEME=qt6ct
+export QT_STYLE_OVERRIDE=Fusion
 export DISPLAY="${DISPLAY:-:0}"
 export XAUTHORITY="${XAUTHORITY:-/home/liveuser/.Xauthority}"
 exec /usr/bin/calamares "$@"

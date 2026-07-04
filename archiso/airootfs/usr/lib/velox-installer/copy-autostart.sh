@@ -36,9 +36,6 @@ if [[ "$ROOT_FSTYPE" == "btrfs" ]]; then
     printf "UUID=%s  /var/log btrfs  noatime,compress=zstd,subvol=@log   0 0\n" "$BTRFS_UUID" >> /etc/fstab
 fi
 
-# Set breeze-velox SDDM theme on installed system
-sed -i 's/Current=.*/Current=breeze-velox/' /etc/sddm.conf.d/kde_settings.conf
-
 # Remove liveuser from installed system
 userdel -r liveuser 2>/dev/null || true
 

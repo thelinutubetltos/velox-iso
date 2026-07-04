@@ -125,11 +125,19 @@ clean_cache() {
     fi
 }
 
+unmount_airootfs() {
+    local airootfs="${buildFolder}/x86_64/airootfs"
+    for mp in proc sys dev/pts dev run tmp; do
+        sudo umount -l "${airootfs}/${mp}" 2>/dev/null || true
+    done
+}
+
 remove_buildfolder() {
     local action="${1:-no}"
     if [[ "${action}" == "yes" ]]; then
         if [[ -d "${buildFolder}" ]]; then
-            log_warn "Deleting build folder: ${buildFolder}"
+            log_warn "Unmounting airootfs pseudo-filesystems then deleting: ${buildFolder}"
+            unmount_airootfs
             sudo rm -rf "${buildFolder}"
         else
             log_info "No build folder found — nothing to delete"

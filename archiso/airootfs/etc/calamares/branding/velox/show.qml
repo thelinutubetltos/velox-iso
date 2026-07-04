@@ -21,7 +21,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-1.png"
+            source: "velox-slide-8.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -67,7 +67,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-2.png"
+            source: "velox-slide-9.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -86,7 +86,7 @@ Presentation {
                 Text {
                     id: titleText2
                     anchors.centerIn: parent
-                    text: "KDE Plasma Desktop"
+                    text: "Choose Your Desktop"
                     color: "#ffffff"
                     font.pixelSize: 36
                     font.bold: true
@@ -101,7 +101,7 @@ Presentation {
                 Text {
                     id: subText2
                     anchors.centerIn: parent
-                    text: "A modern, powerful, and beautiful desktop environment"
+                    text: "KDE Plasma, Cinnamon, or XFCE — pick the perfect fit"
                     color: "#6dab74"
                     font.pixelSize: 18
                 }
@@ -113,7 +113,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-3.png"
+            source: "velox-slide-10.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -159,7 +159,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-4.png"
+            source: "velox-slide-11.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -205,7 +205,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-5.png"
+            source: "velox-slide-12.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -251,7 +251,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-6.png"
+            source: "velox-slide-13.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -297,7 +297,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-7.png"
+            source: "velox-slide-14.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
@@ -341,9 +341,14 @@ Presentation {
 
     Slide {
         anchors.fill: parent
+        Image {
+            anchors.fill: parent
+            source: "velox-slide-15.png"
+            fillMode: Image.PreserveAspectCrop
+        }
         Rectangle {
             anchors.fill: parent
-            color: "#111111"
+            color: "#88000000"
         }
         Column {
             anchors.centerIn: parent
@@ -399,7 +404,7 @@ Presentation {
         anchors.fill: parent
         Image {
             anchors.fill: parent
-            source: "velox-wall-8.png"
+            source: "velox-slide-8.png"
             fillMode: Image.PreserveAspectCrop
         }
         Rectangle {
