@@ -313,6 +313,8 @@ adobe-source-sans-fonts
 
 vimix-cursors
 breeze-icons
+papirus-icon-theme
+leaf-kde-theme
 
 ###########################################################################
 ####                           NEMESIS REPO
@@ -340,6 +342,7 @@ calamares
 ###########################################################################
 
 python-pyparted
+python-gobject
 python-pywal
 fish
 alacritty
