@@ -4,11 +4,14 @@
 sleep 2  # let the display finish reconfiguring
 
 if pgrep -x plasmashell > /dev/null 2>&1; then
-    # KDE Plasma: reload wallpaper via plasmashell D-Bus
-    dbus-send --session --dest=org.kde.plasmashell \
-        --type=method_call /PlasmaShell \
-        org.kde.PlasmaShell.evaluateScript \
-        string:'var d=desktops();for(var i=0;i<d.length;i++){d[i].reloadConfig();}' 2>/dev/null
+    # KDE Wayland: kscreen-doctor applied the resolution live; kwinoutputconfig.json
+    # was written for persistence. Plasmashell receives the Wayland output-change event
+    # and redraws the wallpaper automatically. Just restart ksmoothdock so it
+    # repositions itself to the new screen geometry.
+    sleep 2
+    pkill -x ksmoothdock 2>/dev/null
+    sleep 1
+    /usr/local/bin/ksmoothdock-start &
 
 elif pgrep -x cinnamon > /dev/null 2>&1; then
     # Cinnamon Wayland: the background surface is sized at compositor startup and

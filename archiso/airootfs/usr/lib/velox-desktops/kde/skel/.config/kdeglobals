@@ -1,0 +1,11 @@
+[General]
+ColorScheme=VeloxDark
+AccentColor=138,184,122
+accentColorFromWallpaper=false
+
+[Icons]
+Theme=Papirus-Dark
+
+[KDE]
+LookAndFeelPackage=leaf-dark
+widgetStyle=kvantum-dark

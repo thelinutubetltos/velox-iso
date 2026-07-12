@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = kvantum
+
+[Action]
+Description = Applying Velox green hover patches to KvDark Kvantum theme...
+When = PostTransaction
+Exec = /bin/cp -f /usr/lib/velox-desktops/kde/theme-patches/Kvantum/KvDark/KvDark.svg /usr/lib/velox-desktops/kde/theme-patches/Kvantum/KvDark/KvDark.kvconfig /usr/share/Kvantum/KvDark/

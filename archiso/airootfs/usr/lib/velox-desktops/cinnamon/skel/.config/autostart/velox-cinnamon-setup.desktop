@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Velox Cinnamon Setup
+Exec=bash /usr/lib/velox-installer/velox-cinnamon-firstboot.sh
+Terminal=false
+Hidden=false
+X-GNOME-Autostart-enabled=true

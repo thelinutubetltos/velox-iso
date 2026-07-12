@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=NM Applet
+Exec=nm-applet
+Hidden=true
+X-GNOME-Autostart-enabled=false

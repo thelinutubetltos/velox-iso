@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Wallpaper
+Comment=Set Wayland wallpaper via swaybg
+Exec=swaybg -i /usr/share/wallpapers/Velox-8/contents/images/3840x2160.png -m fill
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

@@ -8,9 +8,11 @@ def log(msg):
         f.write(f"{time.strftime('%H:%M:%S')} {msg}\n")
 
 done_flag = Path(os.environ.get("HOME", "/root")) / ".config/velox-resolution-configured"
-if done_flag.exists():
-    sys.exit(0)
 done_flag.parent.mkdir(parents=True, exist_ok=True)
+try:
+    open(done_flag, 'x').close()  # atomic exclusive create — second instance exits here
+except FileExistsError:
+    sys.exit(0)
 
 log(f"starting, DISPLAY={os.environ.get('DISPLAY')}, WAYLAND_DISPLAY={os.environ.get('WAYLAND_DISPLAY')}")
 
@@ -265,17 +267,109 @@ button.suggested-action:hover {
         return result.returncode == 0
 
 
+def is_kde_wayland():
+    return (os.environ.get('XDG_CURRENT_DESKTOP', '') == 'KDE' and
+            bool(os.environ.get('WAYLAND_DISPLAY')))
+
+
+def strip_ansi(text):
+    return re.sub(r'\x1b\[[0-9;]*m', '', text)
+
+
+def get_kscreen_info():
+    """Query kscreen-doctor for outputs on KDE Wayland."""
+    try:
+        raw = subprocess.check_output(
+            ['kscreen-doctor', '--outputs'], text=True, stderr=subprocess.DEVNULL)
+        output_name, output_uuid, current_res, resolutions, mode_map = None, None, None, [], {}
+        for line in raw.splitlines():
+            clean = strip_ansi(line).strip()
+            m = re.match(r'Output:\s*\d+\s+(\S+)\s+(\S+)', clean)
+            if m:
+                output_name, output_uuid = m.group(1), m.group(2)
+                continue
+            if 'Modes:' in clean:
+                for token in clean.split():
+                    mm = re.match(r'(\d+):([\dx]+)@([\d.]+)([*!]*)', token)
+                    if mm:
+                        mid, res, rate, flags = mm.group(1), mm.group(2), mm.group(3), mm.group(4)
+                        if res not in resolutions:
+                            resolutions.append(res)
+                            mode_map[res] = (mid, int(float(rate) * 1000))
+                        if '*' in flags:
+                            current_res = res
+        log(f"kscreen: output={output_name}, uuid={output_uuid}, current={current_res}, modes={resolutions[:6]}")
+        return output_name, output_uuid, current_res, resolutions, mode_map
+    except Exception as e:
+        log(f"kscreen-doctor failed: {e}")
+        return None, None, None, [], {}
+
+
+def write_kwinoutputconfig(uuid, target_res, mode_map):
+    """Write resolution directly to kwinoutputconfig.json — same as System Settings."""
+    import json
+    config_path = Path(os.environ.get("HOME", "/root")) / ".config/kwinoutputconfig.json"
+    w, h = map(int, target_res.split('x'))
+    refresh_mhz = mode_map[target_res][1]
+
+    if config_path.exists():
+        try:
+            cfg = json.loads(config_path.read_text())
+        except Exception:
+            cfg = []
+    else:
+        cfg = []
+
+    # Find or create the outputs section
+    outputs_section = next((s for s in cfg if s.get('name') == 'outputs'), None)
+    if outputs_section is None:
+        outputs_section = {'name': 'outputs', 'data': []}
+        cfg.append(outputs_section)
+
+    # Find the entry for this UUID or create it
+    entry = next((e for e in outputs_section['data'] if e.get('uuid') == uuid), None)
+    if entry is None:
+        entry = {'uuid': uuid, 'connectorName': 'Virtual-1'}
+        outputs_section['data'].append(entry)
+
+    entry['mode'] = {'flags': 0, 'height': h, 'refreshRate': refresh_mhz, 'width': w}
+
+    config_path.write_text(json.dumps(cfg, indent=4))
+    log(f"kwinoutputconfig: wrote {target_res}@{refresh_mhz}mHz for uuid={uuid}")
+    return True
+
+
+def apply_via_kscreen(output_name, mode_map, target_res):
+    """Apply resolution via kscreen-doctor on KDE Wayland."""
+    if target_res not in mode_map:
+        log(f"kscreen: no mode entry for {target_res}")
+        return False
+    mode_id = mode_map[target_res][0]  # numeric mode ID e.g. "13"
+    cmd = ['kscreen-doctor', f'output.{output_name}.mode.{mode_id}']
+    log(f"kscreen: running {' '.join(cmd)}")
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    log(f"kscreen: rc={r.returncode} {r.stderr.strip()}")
+    return r.returncode == 0
+
+
 def main():
     env = os.environ.copy()
     if 'DISPLAY' not in env:
-        env['DISPLAY'] = ':0'
-    # GTK init reads os.environ directly, not the subprocess copy
+        env['DISPLAY'] = ':1'
     if 'DISPLAY' not in os.environ:
         os.environ['DISPLAY'] = env['DISPLAY']
 
-    # Only retry Muffin if Cinnamon is actually running — skip the 12s wait on KDE/OpenBox
     proxy, muffin_info = None, None
-    if is_cinnamon_running():
+    kscreen_output, kscreen_uuid, kscreen_current, kscreen_resolutions, kscreen_mode_map = None, None, None, [], {}
+    xoutput = None
+
+    if is_kde_wayland():
+        log("KDE Wayland session — using kscreen-doctor")
+        kscreen_output, kscreen_uuid, kscreen_current, kscreen_resolutions, kscreen_mode_map = get_kscreen_info()
+        resolutions = kscreen_resolutions
+        current_res = kscreen_current
+    elif is_cinnamon_running():
+        log("Cinnamon session — using Muffin D-Bus")
         for attempt in range(4):
             proxy = get_muffin_proxy()
             if proxy:
@@ -284,15 +378,15 @@ def main():
                     break
             log(f"muffin not ready (attempt {attempt+1}), retrying...")
             time.sleep(3)
+        if muffin_info:
+            resolutions = muffin_info['resolutions']
+            current_res = muffin_info['current']
+        else:
+            log("muffin unavailable, falling back to xrandr")
+            xoutput, resolutions = get_xrandr_resolutions()
+            current_res = resolutions[0] if resolutions else None
     else:
-        log("non-Cinnamon session, skipping Muffin")
-
-    if muffin_info:
-        resolutions = muffin_info['resolutions']
-        current_res = muffin_info['current']
-        xoutput = None
-    else:
-        log("muffin unavailable, falling back to xrandr")
+        log("X11 session — using xrandr")
         xoutput, resolutions = get_xrandr_resolutions()
         current_res = resolutions[0] if resolutions else None
 
@@ -307,7 +401,7 @@ def main():
         done_flag.touch()
         return
 
-    if target == current_res:
+    if target == current_res and not is_kde_wayland():
         log(f"already at best resolution {target}, nothing to do")
         done_flag.touch()
         return
@@ -316,11 +410,15 @@ def main():
 
     if show_resolution_dialog(target, env):
         log("user clicked Apply")
-        # Pre-set zoom before the resolution change so Cinnamon renders correctly
-        subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
-                        'picture-options', 'zoom'], env=env, stderr=subprocess.DEVNULL)
+        if not is_kde_wayland():
+            subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
+                            'picture-options', 'zoom'], env=env, stderr=subprocess.DEVNULL)
         applied = False
-        if proxy and muffin_info:
+        if kscreen_output:
+            applied = apply_via_kscreen(kscreen_output, kscreen_mode_map, target)
+            if applied and kscreen_uuid:
+                write_kwinoutputconfig(kscreen_uuid, target, kscreen_mode_map)
+        if not applied and proxy and muffin_info:
             applied = apply_via_muffin(proxy, muffin_info, target)
         if not applied and xoutput:
             applied = apply_via_xrandr(xoutput, target)

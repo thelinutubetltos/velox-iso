@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Terminal
+Comment=Open a terminal
+Exec=xfce4-terminal
+Icon=xfce4-terminal
+StartupNotify=true
+Terminal=false
+Type=Application

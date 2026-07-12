@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=xfce4-settings-manager
+Icon=preferences-system
+Name=System Settings
+Terminal=false
+Type=Application

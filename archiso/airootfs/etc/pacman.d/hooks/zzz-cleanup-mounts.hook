@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Unmounting virtual filesystems from chroot
+When = PostTransaction
+Exec = /bin/sh -c 'umount /proc /sys /dev/pts /dev /run 2>/dev/null; true'

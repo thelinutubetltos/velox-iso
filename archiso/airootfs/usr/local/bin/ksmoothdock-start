@@ -1,0 +1,13 @@
+#!/bin/bash
+sleep 3
+XAUTH=$(ls /run/user/$(id -u)/xauth_* 2>/dev/null | head -1)
+export XAUTHORITY="$XAUTH"
+export QT_QPA_PLATFORM=xcb
+
+while true; do
+    ksmoothdock
+    # ksmoothdock exited (screen lock kills XWayland connection) — restart after brief delay
+    sleep 2
+    XAUTH=$(ls /run/user/$(id -u)/xauth_* 2>/dev/null | head -1)
+    export XAUTHORITY="$XAUTH"
+done

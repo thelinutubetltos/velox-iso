@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Firefox
+Comment=Browse the web
+Exec=firefox
+Icon=firefox
+StartupNotify=true
+Terminal=false
+Type=Application

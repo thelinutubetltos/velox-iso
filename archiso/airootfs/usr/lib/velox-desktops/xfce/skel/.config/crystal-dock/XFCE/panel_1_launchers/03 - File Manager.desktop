@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=thunar
+Icon=org.xfce.thunar
+Name=File Manager
+Terminal=false
+Type=Application

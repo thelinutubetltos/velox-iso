@@ -27,18 +27,38 @@ ROOT_DISK=$(echo $ROOT_PART | sed 's|/dev/||' | sed 's/[0-9]*$//')
 ROOT_UUID=$(blkid -s UUID -o value $ROOT_PART)
 echo "ROOT_PART=$ROOT_PART ROOT_DISK=$ROOT_DISK ROOT_UUID=$ROOT_UUID ROOT_FSTYPE=$ROOT_FSTYPE"
 
-# Detect NVIDIA GPU and install proprietary drivers
+# Detect NVIDIA GPU and install open kernel modules (Arch dropped nvidia-dkms; only nvidia-open-dkms available)
 HAS_NVIDIA=false
 GPU_PARAMS=""
 if lspci | grep -qi nvidia; then
-    HAS_NVIDIA=true
-    GPU_PARAMS=" nvidia-drm.modeset=1"
-    echo "NVIDIA GPU detected — installing proprietary drivers"
-    pacman -S --noconfirm --needed nvidia-open-dkms nvidia-utils nvidia-settings
-    sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
-    mkinitcpio -p linux-velox
-    # Persist modeset param so grub-mkconfig also produces correct entries
-    sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
+    echo "NVIDIA GPU detected — installing open kernel modules"
+    GPU_PARAMS=" nouveau.modeset=0"
+
+    # Install package — DKMS auto-build may fail for our Clang-built kernel; we patch and rebuild below
+    pacman -S --noconfirm --needed nvidia-open-dkms nvidia-utils nvidia-settings 2>&1 || true
+
+    NVIDIA_VER=$(pacman -Q nvidia-open-dkms 2>/dev/null | awk '{print $2}' | cut -d- -f1)
+    if [ -n "$NVIDIA_VER" ] && [ -d "/usr/src/nvidia-${NVIDIA_VER}" ]; then
+        # velox kernel is Clang-built — add LLVM=1 to the DKMS make command
+        sed -i 's/ modules"$/ modules LLVM=1"/' /usr/src/nvidia-${NVIDIA_VER}/dkms.conf
+
+        # Remove any stale built modules so DKMS rebuilds cleanly
+        dkms remove "nvidia/${NVIDIA_VER}" -k "$(uname -r)" 2>/dev/null || true
+
+        if dkms install --no-depmod "nvidia/${NVIDIA_VER}" -k "$(uname -r)" 2>&1; then
+            depmod "$(uname -r)"
+            HAS_NVIDIA=true
+            GPU_PARAMS=" nouveau.modeset=0 nvidia-drm.modeset=1"
+            sed -i 's/^MODULES=.*/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/' /etc/mkinitcpio.conf
+            sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf keyboard keymap consolefont block filesystems fsck)/' /etc/mkinitcpio.conf
+            mkinitcpio -p linux-velox
+            echo "NVIDIA drivers installed — kms hook removed"
+        else
+            echo "DKMS build failed — GPU may require legacy driver (nvidia-470xx-dkms for pre-Turing GPUs)"
+        fi
+    else
+        echo "nvidia-open-dkms package not available"
+    fi
 fi
 
 # Install grub
@@ -76,15 +96,15 @@ GRUBEOF
 if [ "$HAS_NVIDIA" = true ]; then
     cat >> /boot/grub/grub.cfg << GRUBEOF
 
-menuentry "Velox Linux - NVIDIA (proprietary)" {
+menuentry "Velox Linux - NVIDIA" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash nvidia-drm.modeset=1
+    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash nouveau.modeset=0 nvidia-drm.modeset=1
     initrd ${BOOT_PREFIX}/boot/initramfs-linux-velox.img
 }
 
-menuentry "Velox Linux - NVIDIA (open source)" {
+menuentry "Velox Linux - NVIDIA (legacy GPU)" {
     search --no-floppy --fs-uuid --set=root $ROOT_UUID
-    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash nvidia-drm.modeset=1 nouveau.modeset=1
+    linux ${BOOT_PREFIX}/boot/vmlinuz-linux-velox root=UUID=$ROOT_UUID ${ROOTFLAGS}rw quiet splash nouveau.modeset=0 nvidia-drm.modeset=1 nvidia.NVreg_OpenRmEnableUnsupportedGpus=1
     initrd ${BOOT_PREFIX}/boot/initramfs-linux-velox.img
 }
 GRUBEOF

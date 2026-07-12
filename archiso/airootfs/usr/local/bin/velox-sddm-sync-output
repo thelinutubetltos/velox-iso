@@ -1,0 +1,10 @@
+#!/bin/bash
+# Runs as root before SDDM starts.
+# Copies the first found user's kwinoutputconfig.json into the SDDM config dir
+# so kwin_wayland uses the correct output UUID and resolution for the greeter.
+SDDM_CFG="/var/lib/sddm/.config/kwinoutputconfig.json"
+for cfg in /home/*/.config/kwinoutputconfig.json; do
+    [ -f "$cfg" ] || continue
+    install -m 644 -o 0 -g 0 "$cfg" "$SDDM_CFG"
+    exit 0
+done

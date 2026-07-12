@@ -1,0 +1,27 @@
+#!/bin/bash
+# SDDM kwin_wayland wrapper — starts compositor then applies 1920x1080 via kscreen-doctor
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+mkdir -p "$XDG_RUNTIME_DIR" 2>/dev/null
+
+kwin_wayland --no-lockscreen &
+KW_PID=$!
+
+# Wait up to 6s for the Wayland socket
+for i in $(seq 12); do
+    sleep 0.5
+    [ -S "${XDG_RUNTIME_DIR}/wayland-0" ] && break
+done
+
+if [ -S "${XDG_RUNTIME_DIR}/wayland-0" ]; then
+    export WAYLAND_DISPLAY=wayland-0
+    # Get the first connected output name
+    OUTPUT=$(kscreen-doctor 2>/dev/null \
+        | grep -oP '(?<=Output: [0-9]\. )[^ ]+' \
+        | head -1)
+    if [ -n "$OUTPUT" ]; then
+        kscreen-doctor "output.${OUTPUT}.mode.1920x1080" 2>/dev/null || \
+        kscreen-doctor "output.${OUTPUT}.mode.1920x1080@60" 2>/dev/null || true
+    fi
+fi
+
+wait $KW_PID

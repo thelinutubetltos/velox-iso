@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Velox Display Setup
+Exec=/usr/bin/velox-set-resolution
+Terminal=false
+Hidden=false
+X-KDE-autostart-phase=2

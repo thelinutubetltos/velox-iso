@@ -1,0 +1,99 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "spacing": 4,
+    "exclusive": true,
+    "gtk-layer-shell": true,
+
+    "modules-left": [
+        "image",
+        "wlr/taskbar"
+    ],
+
+    "modules-center": [
+        "clock"
+    ],
+
+    "modules-right": [
+        "tray",
+        "network",
+        "pulseaudio",
+        "battery",
+        "custom/keyboard",
+        "custom/power"
+    ],
+
+    "image": {
+        "path": "/home/alex/.local/share/velox/velox-logo-cropped.png",
+        "size": 22,
+        "tooltip": false,
+        "on-click": "env GTK_THEME=Adwaita nwg-drawer -c 5 -is 52 -mt 40 -mb 40 -ml 120 -mr 120"
+    },
+
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 18,
+        "icon-theme": "Newaita",
+        "tooltip-format": "{title}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "ignore-list": [],
+        "app_ids-mapping": {}
+    },
+
+    "clock": {
+        "format": "{:%a %b %d  %H:%M}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "tray": {
+        "icon-size": 28,
+        "spacing": 6
+    },
+
+    "network": {
+        "format-wifi": "󰤨  {signalStrength}%",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰤭  offline",
+        "format-disabled": "󰤭  disabled",
+        "tooltip-format-wifi": "{essid} ({ifname})\n{ipaddr}\nSignal: {signalStrength}%",
+        "tooltip-format-ethernet": "{ifname}: {ipaddr}",
+        "on-click": "env GTK_THEME=Fluent-grey-Light nm-connection-editor"
+    },
+
+    "pulseaudio": {
+        "format": "{icon}  {volume}%",
+        "format-muted": "  muted",
+        "format-icons": {
+            "default": ["", "", ""]
+        },
+        "on-click": "env GTK_THEME=Fluent-grey-Light pavucontrol",
+        "tooltip": false
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon}  {capacity}%",
+        "format-charging": "  {capacity}%",
+        "format-plugged": "  {capacity}%",
+        "format-icons": ["", "", "", "", ""],
+        "tooltip": false
+    },
+
+    "custom/keyboard": {
+        "exec": "localectl status | awk '/VC Keymap/{print toupper($3)}'",
+        "interval": 5,
+        "format": "  {}",
+        "tooltip": false
+    },
+
+    "custom/power": {
+        "format": "⏻",
+        "tooltip": false,
+        "on-click": "env GTK_THEME=Fluent-grey-Light xfce4-session-logout"
+    }
+}

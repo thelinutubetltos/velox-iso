@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Crystal Dock
+Comment=Wayland dock
+Exec=crystal-dock
+Icon=crystal-dock
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

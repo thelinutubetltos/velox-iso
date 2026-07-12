@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = leaf-kde-theme
+
+[Action]
+Description = Applying Velox glass hover patches to Leaf KDE theme...
+When = PostTransaction
+Exec = /bin/cp -f /usr/lib/velox-desktops/kde/theme-patches/Leaf/widgets/viewitem.svg /usr/lib/velox-desktops/kde/theme-patches/Leaf/widgets/listitem.svg /usr/lib/velox-desktops/kde/theme-patches/Leaf/widgets/button.svg /usr/lib/velox-desktops/kde/theme-patches/Leaf/widgets/actionbutton.svg /usr/share/plasma/desktoptheme/Leaf/widgets/

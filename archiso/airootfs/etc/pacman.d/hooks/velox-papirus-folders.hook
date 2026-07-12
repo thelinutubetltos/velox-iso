@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = papirus-icon-theme
+
+[Action]
+Description = Applying Velox green folder colors to Papirus-Dark icon theme...
+When = PostTransaction
+Exec = /usr/lib/velox-desktops/kde/apply-papirus-green-folders.sh

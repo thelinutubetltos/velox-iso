@@ -1,0 +1,85 @@
+- name: "KDE Plasma"
+  description: "Full KDE Plasma desktop with Leaf Dark theme and KSmoothDock"
+  selected: false
+  critical: true
+  packages:
+    - plasma-desktop
+    - plasma-nm
+    - plasma-pa
+    - plasma-systemmonitor
+    - kdeplasma-addons
+    - kwin
+    - kscreen
+    - kinfocenter
+    - plasma-disks
+    - konsole
+    - dolphin
+    - kate
+    - kdialog
+    - ark
+    - spectacle
+    - okular
+    - gwenview
+    - kcalc
+    - polkit-kde-agent
+    - ksmoothdock
+    - xdg-desktop-portal-kde
+    - kvantum
+    - plasma6-applets-panel-colorizer
+    - candy-icons-git
+    - spotify
+
+- name: "Cinnamon"
+  description: "Cinnamon desktop with Fluent Velox Dark theme"
+  selected: false
+  critical: true
+  packages:
+    - cinnamon
+    - cinnamon-control-center
+    - cinnamon-desktop
+    - cinnamon-menus
+    - cinnamon-screensaver
+    - cinnamon-session
+    - cinnamon-settings-daemon
+    - cinnamon-translations
+    - muffin
+    - nemo
+    - nemo-fileroller
+    - xfce4-terminal
+    - mousepad
+    - polkit-gnome
+    - xdg-desktop-portal-xapp
+    - xdg-desktop-portal-gtk
+    - fluent-gtk-theme-git
+    - newaita-icons-git
+    - spotify
+
+- name: "XFCE"
+  description: "XFCE desktop with Wayland support via labwc and waybar"
+  selected: false
+  critical: true
+  packages:
+    - xfce4
+    - xfce4-goodies
+    - xfwm4
+    - xfce4-session
+    - xfce4-panel
+    - xfdesktop
+    - xfce4-settings
+    - xfce4-terminal
+    - thunar
+    - thunar-volman
+    - thunar-archive-plugin
+    - tumbler
+    - mousepad
+    - labwc
+    - xorg-xwayland
+    - waybar
+    - swaybg
+    - crystal-dock-git
+    - nwg-drawer
+    - polkit-gnome
+    - xdg-desktop-portal-gtk
+    - fluent-gtk-theme-git
+    - newaita-icons-git
+    - spotify

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_menu>
+  <menu id="root-menu" label="Desktop">
+    <item label="App Drawer">
+      <action name="Execute">
+        <command>env GTK_THEME=Adwaita nwg-drawer -c 5 -is 52 -mt 40 -mb 40 -ml 120 -mr 120</command>
+      </action>
+    </item>
+    <item label="Terminal">
+      <action name="Execute">
+        <command>xfce4-terminal</command>
+      </action>
+    </item>
+    <item label="File Manager">
+      <action name="Execute">
+        <command>thunar</command>
+      </action>
+    </item>
+    <separator/>
+    <item label="Settings Manager">
+      <action name="Execute">
+        <command>xfce4-settings-manager</command>
+      </action>
+    </item>
+    <item label="Velox Control Center">
+      <action name="Execute">
+        <command>velox-control-center</command>
+      </action>
+    </item>
+    <separator/>
+    <item label="Reconfigure">
+      <action name="Reconfigure"/>
+    </item>
+    <item label="Exit">
+      <action name="Exit"/>
+    </item>
+  </menu>
+</openbox_menu>

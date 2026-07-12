@@ -254,6 +254,9 @@
     <application class="calamares" name="calamares">
       <decor>no</decor>
     </application>
+    <application title="Velox Linux*">
+      <decor>no</decor>
+    </application>
   </applications>
 
 </openbox_config>

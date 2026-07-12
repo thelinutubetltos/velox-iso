@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i 's|^Exec=ksmoothdock|Exec=/usr/local/bin/ksmoothdock-start|' /usr/share/applications/ksd.ksmoothdock.desktop

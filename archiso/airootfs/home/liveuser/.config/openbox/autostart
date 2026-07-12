@@ -1,0 +1,4 @@
+#!/bin/bash
+# Velox live session — launch installer
+feh --bg-scale /usr/share/wallpapers/Velox-8/contents/images/3840x2160.png 2>/dev/null &
+/usr/bin/velox-live-start &

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=velox-control-center
+Icon=system-software-install
+Name=Control Center
+Terminal=false
+Type=Application

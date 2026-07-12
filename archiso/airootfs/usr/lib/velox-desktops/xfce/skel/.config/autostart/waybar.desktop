@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Waybar
+Comment=Wayland bar
+Exec=env GTK_THEME=Adwaita waybar
+Icon=waybar
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Exec=mousepad
+Icon=org.xfce.mousepad
+Name=Text Editor
+Terminal=false
+Type=Application

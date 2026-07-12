@@ -1,0 +1,5 @@
+[Greeter]
+Theme=org.kde.breeze.desktop
+
+[Greeter][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/Velox-8/contents/images/3840x2160.png

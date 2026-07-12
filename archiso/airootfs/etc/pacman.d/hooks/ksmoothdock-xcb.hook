@@ -7,4 +7,4 @@ Target = ksmoothdock
 [Action]
 Description = Force XWayland mode for ksmoothdock (fixes dock positioning on Plasma Wayland)
 When = PostTransaction
-Exec = /bin/sed -i s|^Exec=ksmoothdock|Exec=env QT_QPA_PLATFORM=xcb ksmoothdock| /usr/share/applications/ksd.ksmoothdock.desktop
+Exec = /usr/local/bin/ksmoothdock-patch

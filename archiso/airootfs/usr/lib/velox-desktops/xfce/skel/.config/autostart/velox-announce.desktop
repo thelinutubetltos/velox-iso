@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Velox Control Center Announcement
+Exec=velox-announce
+Terminal=false
+Hidden=false
