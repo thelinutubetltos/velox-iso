@@ -10,9 +10,10 @@
   </placement>
 
   <theme>
-    <name>Fluent-grey-Dark</name>
+    <name>Velox-Dark</name>
     <cornerRadius>8</cornerRadius>
-    <font name="sans" size="10"/>
+    <font name="Noto Sans" size="10" weight="Normal"/>
+    <font place="MenuItem" name="Noto Sans" size="10" weight="Normal"/>
   </theme>
 
   <desktops number="4" />
@@ -69,7 +70,13 @@
   </keyboard>
 
   <snapping>
-    <range>10</range>
+    <range inner="10" outer="10"/>
   </snapping>
+
+  <windowRules>
+    <windowRule title="Velox Launcher">
+      <action name="MoveTo" x="center" y="center"/>
+    </windowRule>
+  </windowRules>
 
 </labwc_config>

@@ -2,7 +2,7 @@
 Type=Application
 Name=Waybar
 Comment=Wayland bar
-Exec=env GTK_THEME=Adwaita waybar
+Exec=env GTK_THEME=Fluent-grey-Dark GDK_GL=disabled GDK_BACKEND=wayland waybar
 Icon=waybar
 StartupNotify=false
 X-GNOME-Autostart-enabled=true

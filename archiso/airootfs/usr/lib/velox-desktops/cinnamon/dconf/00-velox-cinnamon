@@ -1,7 +1,7 @@
 [org/cinnamon/desktop/interface]
-gtk-theme='Fluent-grey-Dark'
+gtk-theme='Fluent-Velox-Dark'
 icon-theme='Newaita-Velox'
-cursor-theme='breeze_cursors'
+cursor-theme='Adwaita'
 font-name='Noto Sans 11'
 
 [org/cinnamon/theme]
@@ -20,7 +20,7 @@ picture-uri='file:///usr/share/wallpapers/Velox-8/contents/images/3840x2160.png'
 picture-options='zoom'
 
 [org/gnome/desktop/interface]
-gtk-theme='Fluent-grey-Dark'
+gtk-theme='Fluent-Velox-Dark'
 icon-theme='Newaita-Velox'
-cursor-theme='breeze_cursors'
+cursor-theme='Adwaita'
 font-name='Noto Sans 11'

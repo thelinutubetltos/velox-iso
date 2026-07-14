@@ -2165,7 +2165,9 @@ menu menuitem:hover,
 .menu menuitem:hover,
 .context-menu menuitem:hover {
   transition: none;
-  background-color: alpha(currentColor, 0.08);
+  color: #8ab87a;
+  background-color: #243824;
+  box-shadow: inset 3px 0 0 #8ab87a;
 }
 
 menu menuitem:disabled,

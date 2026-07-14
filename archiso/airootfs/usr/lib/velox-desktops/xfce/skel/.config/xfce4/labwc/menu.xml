@@ -1,38 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openbox_menu>
   <menu id="root-menu" label="Desktop">
-    <item label="App Drawer">
+    <item label="  Velox Launcher">
       <action name="Execute">
-        <command>env GTK_THEME=Adwaita nwg-drawer -c 5 -is 52 -mt 40 -mb 40 -ml 120 -mr 120</command>
+        <command>velox-launcher</command>
       </action>
     </item>
-    <item label="Terminal">
+    <separator/>
+    <item label="  Terminal">
       <action name="Execute">
         <command>xfce4-terminal</command>
       </action>
     </item>
-    <item label="File Manager">
+    <item label="  Files">
       <action name="Execute">
         <command>thunar</command>
       </action>
     </item>
+    <item label="  Web Browser">
+      <action name="Execute">
+        <command>firefox</command>
+      </action>
+    </item>
+    <item label="  Text Editor">
+      <action name="Execute">
+        <command>mousepad</command>
+      </action>
+    </item>
     <separator/>
-    <item label="Settings Manager">
+    <item label="  Display Settings">
+      <action name="Execute">
+        <command>xfce4-display-settings</command>
+      </action>
+    </item>
+    <item label="  Settings">
       <action name="Execute">
         <command>xfce4-settings-manager</command>
       </action>
     </item>
-    <item label="Velox Control Center">
-      <action name="Execute">
-        <command>velox-control-center</command>
-      </action>
-    </item>
     <separator/>
-    <item label="Reconfigure">
-      <action name="Reconfigure"/>
-    </item>
-    <item label="Exit">
-      <action name="Exit"/>
+    <item label="  Log Out">
+      <action name="Execute">
+        <command>env GTK_THEME=Fluent-grey-Light xfce4-session-logout</command>
+      </action>
     </item>
   </menu>
 </openbox_menu>

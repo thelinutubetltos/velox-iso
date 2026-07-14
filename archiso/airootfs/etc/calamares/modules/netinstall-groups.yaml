@@ -27,6 +27,7 @@
     - kvantum
     - plasma6-applets-panel-colorizer
     - candy-icons-git
+    - fastfetch-git
     - spotify
 
 - name: "Cinnamon"
@@ -52,6 +53,7 @@
     - xdg-desktop-portal-gtk
     - fluent-gtk-theme-git
     - newaita-icons-git
+    - fastfetch-git
     - spotify
 
 - name: "XFCE"
@@ -75,11 +77,14 @@
     - labwc
     - xorg-xwayland
     - waybar
+    - wlr-randr
     - swaybg
     - crystal-dock-git
     - nwg-drawer
+    - python-gobject
     - polkit-gnome
     - xdg-desktop-portal-gtk
     - fluent-gtk-theme-git
     - newaita-icons-git
+    - fastfetch-git
     - spotify

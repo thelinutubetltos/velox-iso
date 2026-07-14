@@ -7,7 +7,7 @@
     "gtk-layer-shell": true,
 
     "modules-left": [
-        "image",
+        "custom/launcher",
         "wlr/taskbar"
     ],
 
@@ -20,21 +20,19 @@
         "network",
         "pulseaudio",
         "battery",
-        "custom/keyboard",
-        "custom/power"
+        "custom/keyboard"
     ],
 
-    "image": {
-        "path": "/home/alex/.local/share/velox/velox-logo-cropped.png",
-        "size": 22,
+    "custom/launcher": {
+        "format": "☰",
         "tooltip": false,
-        "on-click": "env GTK_THEME=Adwaita nwg-drawer -c 5 -is 52 -mt 40 -mb 40 -ml 120 -mr 120"
+        "on-click": "velox-launcher"
     },
 
     "wlr/taskbar": {
         "format": "{icon}",
         "icon-size": 18,
-        "icon-theme": "Newaita",
+        "icon-theme": "Papirus-Dark",
         "tooltip-format": "{title}",
         "on-click": "activate",
         "on-click-middle": "close",
@@ -59,7 +57,7 @@
         "format-disabled": "󰤭  disabled",
         "tooltip-format-wifi": "{essid} ({ifname})\n{ipaddr}\nSignal: {signalStrength}%",
         "tooltip-format-ethernet": "{ifname}: {ipaddr}",
-        "on-click": "env GTK_THEME=Fluent-grey-Light nm-connection-editor"
+        "on-click": "env GTK_THEME=Fluent-grey-Dark nm-connection-editor"
     },
 
     "pulseaudio": {
@@ -68,7 +66,7 @@
         "format-icons": {
             "default": ["", "", ""]
         },
-        "on-click": "env GTK_THEME=Fluent-grey-Light pavucontrol",
+        "on-click": "env GTK_THEME=Fluent-grey-Dark pavucontrol",
         "tooltip": false
     },
 
@@ -89,11 +87,5 @@
         "interval": 5,
         "format": "  {}",
         "tooltip": false
-    },
-
-    "custom/power": {
-        "format": "⏻",
-        "tooltip": false,
-        "on-click": "env GTK_THEME=Fluent-grey-Light xfce4-session-logout"
     }
 }

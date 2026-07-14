@@ -1,5 +1,4 @@
 QT_QPA_PLATFORMTHEME=qt5ct
 QT_STYLE_OVERRIDE=kvantum
-GTK_THEME=Adwaita:dark
 EDITOR=nano
 BROWSER=firefox

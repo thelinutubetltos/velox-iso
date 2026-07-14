@@ -12,7 +12,7 @@ detect_desktop() {
         echo "kde"
     elif pacman -Q cinnamon &>/dev/null; then
         echo "cinnamon"
-    elif pacman -Q xfce4 &>/dev/null; then
+    elif pacman -Q xfce4-session &>/dev/null; then
         echo "xfce"
     else
         echo "unknown"
@@ -57,7 +57,7 @@ case "$DESKTOP" in
         SDDM_THEME="velox"
         ;;
     xfce)
-        SESSION="xfce"
+        SESSION="xfce-wayland"
         SDDM_THEME="velox"
         ;;
 esac
@@ -65,6 +65,21 @@ esac
 sed -i "s/^Session=.*/Session=${SESSION}/" /etc/sddm.conf.d/kde_settings.conf
 sed -i "s/^Current=.*/Current=${SDDM_THEME}/" /etc/sddm.conf.d/kde_settings.conf
 echo "Set SDDM session to: $SESSION, theme to: $SDDM_THEME"
+
+# Pre-fill SDDM username and session for all desktops.
+# SDDM's SessionModel::populate() compares state.conf Session= against session->fileName()
+# which returns the FULL absolute path — writing just the basename never matches and SDDM
+# falls back to index 0 (alphabetically first session = labwc). Must write the full path.
+INSTALL_USER=$(ls /home | grep -v lost+found | head -1)
+if [[ -n "$INSTALL_USER" ]]; then
+    SESSION_PATH=$(find /usr/share/wayland-sessions /usr/share/xsessions \
+        -name "${SESSION}.desktop" 2>/dev/null | head -1)
+    SESSION_PATH="${SESSION_PATH:-${SESSION}}"
+    mkdir -p /var/lib/sddm
+    printf '[Last]\nUser=%s\nSession=%s\n' "$INSTALL_USER" "$SESSION_PATH" > /var/lib/sddm/state.conf
+    chown -R sddm:sddm /var/lib/sddm/state.conf 2>/dev/null || true
+    echo "Set SDDM last user to: $INSTALL_USER, session path: $SESSION_PATH"
+fi
 
 # KDE Wayland: SDDM must be told to use the Wayland backend so it doesn't hold DRM
 # master and block KWin from acquiring the DRM node at session start.
@@ -86,14 +101,6 @@ if [[ "$DESKTOP" == "kde" ]]; then
     fi
     echo "Set SDDM CompositorCommand=/usr/local/bin/velox-sddm-kwin-start"
 
-    # Pre-fill SDDM username with the installed user so they don't have to type it
-    INSTALL_USER=$(ls /home | grep -v lost+found | head -1)
-    if [[ -n "$INSTALL_USER" ]]; then
-        mkdir -p /var/lib/sddm
-        printf '[Last]\nUser=%s\n' "$INSTALL_USER" > /var/lib/sddm/state.conf
-        chown -R sddm:sddm /var/lib/sddm/state.conf 2>/dev/null || true
-        echo "Set SDDM last user to: $INSTALL_USER"
-    fi
 fi
 
 # KDE manages Qt styles via kdeglobals — the live-session qt5ct/kvantum overrides break
@@ -193,10 +200,55 @@ DESKEOF
 fi
 
 
-if [[ "$DESKTOP" == "cinnamon" ]]; then
-    # Fix GTK_THEME so GTK apps use the Velox Fluent theme instead of Adwaita
-    sed -i 's/^GTK_THEME=.*/GTK_THEME=Fluent-grey-Dark/' /etc/environment
+if [[ "$DESKTOP" == "xfce" ]]; then
+    # accounts-daemon polls systemd-homed D-Bus on every login; homed is not used
+    # and never starts, causing a multi-second timeout that delays the XFCE session.
+    systemctl mask systemd-homed 2>/dev/null || true
+    echo "Masked systemd-homed to prevent accounts-daemon startup delay"
+
+    # GTK_THEME env var — most reliable way to force dark theme on Wayland.
+    # settings.ini and gsettings are both ignored by GTK3 in this session setup.
+    if grep -q '^GTK_THEME=' /etc/environment; then
+        sed -i 's/^GTK_THEME=.*/GTK_THEME=Fluent-grey-Dark/' /etc/environment
+    else
+        echo 'GTK_THEME=Fluent-grey-Dark' >> /etc/environment
+    fi
     echo "Set GTK_THEME=Fluent-grey-Dark in /etc/environment"
+
+    # GSettings schema override — sets dark GTK theme before first login, no D-Bus needed.
+    # GTK3 on Wayland reads GSettings (org.gnome.desktop.interface) in preference to
+    # settings.ini when no GTK_THEME env var is set.
+    mkdir -p /usr/share/glib-2.0/schemas
+    cat > /usr/share/glib-2.0/schemas/99-velox-xfce.gschema.override << 'SCHEMAEOF'
+[org.gnome.desktop.interface]
+gtk-theme='Fluent-Velox-Dark'
+icon-theme='Newaita'
+cursor-theme='Adwaita'
+font-name='Noto Sans 10'
+color-scheme='prefer-dark'
+SCHEMAEOF
+    glib-compile-schemas /usr/share/glib-2.0/schemas/ 2>/dev/null || true
+    echo "Installed GSettings schema override for XFCE"
+fi
+
+if [[ "$DESKTOP" == "cinnamon" ]]; then
+    # GTK_THEME points to our custom Fluent-Velox-Dark (in ~/.local/share/themes) so that
+    # the green hover CSS in that theme is the one GTK apps (Nemo, etc.) actually use.
+    if grep -q '^GTK_THEME=' /etc/environment; then
+        sed -i 's/^GTK_THEME=.*/GTK_THEME=Fluent-Velox-Dark/' /etc/environment
+    else
+        echo 'GTK_THEME=Fluent-Velox-Dark' >> /etc/environment
+    fi
+    echo "Set GTK_THEME=Fluent-Velox-Dark in /etc/environment"
+
+    # Cursor theme — Adwaita is always available via adwaita-icon-theme (GTK dep).
+    if grep -q '^XCURSOR_THEME=' /etc/environment; then
+        sed -i 's/^XCURSOR_THEME=.*/XCURSOR_THEME=Adwaita/' /etc/environment
+    else
+        echo 'XCURSOR_THEME=Adwaita' >> /etc/environment
+    fi
+    grep -q '^XCURSOR_SIZE=' /etc/environment || echo 'XCURSOR_SIZE=24' >> /etc/environment
+    echo "Set XCURSOR_THEME=Adwaita in /etc/environment"
 
     # dconf system defaults — theme applies before first login
     DCONF_SRC="${DESKTOPS_DIR}/cinnamon/dconf/00-velox-cinnamon"
@@ -229,18 +281,18 @@ DESKEOF
 name='Fluent-Velox-Dark'
 
 [org.cinnamon.desktop.interface]
-gtk-theme='Fluent-grey-Dark'
+gtk-theme='Fluent-Velox-Dark'
 icon-theme='Newaita-Velox'
-cursor-theme='breeze_cursors'
+cursor-theme='Adwaita'
 font-name='Noto Sans 11'
 
 [org.cinnamon.desktop.wm.preferences]
 theme='Fluent-Velox-Dark'
 
 [org.gnome.desktop.interface]
-gtk-theme='Fluent-grey-Dark'
+gtk-theme='Fluent-Velox-Dark'
 icon-theme='Newaita-Velox'
-cursor-theme='breeze_cursors'
+cursor-theme='Adwaita'
 font-name='Noto Sans 11'
 
 [org.cinnamon.desktop.background]
@@ -249,4 +301,19 @@ picture-options='zoom'
 SCHEMAEOF
     glib-compile-schemas /usr/share/glib-2.0/schemas/ 2>/dev/null || true
     echo "Installed GSettings schema override for Cinnamon"
+
+    # Patch folder-desktop SVG in Newaita-Velox: replace blue monitor body colour with Velox green.
+    # The blue is rgb(47.45%,52.55%,79.61%) which maps to #79869B. Patch to Velox green shades.
+    INSTALL_USER=$(ls /home | grep -v lost+found | head -1)
+    ICON_DIR="/home/$INSTALL_USER/.local/share/icons/Newaita-Velox/places"
+    if [[ -d "$ICON_DIR" ]]; then
+        find "$ICON_DIR" -name "folder-desktop.svg" -o -name "user-desktop.svg" 2>/dev/null \
+            | xargs grep -lF '47.450981%,52.549022%,79.607844%' 2>/dev/null \
+            | xargs sed -i \
+                's/47\.450981%,52\.549022%,79\.607844%/34.117647%,54.901961%,27.843137%/g;
+                 s/rgb(54\.117647%,72\.156863%,47\.843137%)/rgb(27.843137%,43.921569%,22.352941%)/g' \
+                2>/dev/null || true
+        gtk-update-icon-cache -f "$ICON_DIR/../" 2>/dev/null || true
+        echo "Patched Newaita-Velox folder-desktop to Velox green"
+    fi
 fi

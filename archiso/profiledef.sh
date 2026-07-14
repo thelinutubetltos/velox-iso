@@ -36,6 +36,7 @@ file_permissions=(
   ["/usr/bin/calamares-launcher"]="0:0:755"
   ["/usr/bin/velox-live-start"]="0:0:755"
   ["/usr/bin/velox-set-resolution"]="0:0:755"
+  ["/usr/bin/velox-launcher"]="0:0:755"
   ["/usr/bin/velox-reload-desktop"]="0:0:755"
   ["/usr/local/bin/velox-sddm-kwin-start"]="0:0:755"
   ["/usr/local/bin/velox-sddm-sync-output"]="0:0:755"

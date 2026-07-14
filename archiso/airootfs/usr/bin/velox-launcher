@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+"""velox-launcher — Velox Linux app launcher (KDE Kickoff-style, GTK3)."""
+import gi, os, re, shlex, subprocess, configparser
+gi.require_version('Gtk', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import Gtk, Gdk, GdkPixbuf, GLib, Pango
+from pathlib import Path
+
+W, H = 540, 580
+
+CSS = b"""
+* { font-family: "Noto Sans", sans-serif; font-size: 13px; }
+
+window {
+    background-color: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+}
+
+#search-row {
+    background-color: #252525;
+    border-bottom: 1px solid #333333;
+    padding: 6px 8px;
+}
+
+entry {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #444444;
+    border-radius: 6px;
+    caret-color: #8ab87a;
+    padding: 4px 8px;
+}
+entry:focus { border-color: #8ab87a; box-shadow: none; }
+
+#cat-list { background-color: #1a1a1a; border-right: 1px solid #333333; }
+#cat-list row { padding: 7px 14px; color: #aaaaaa; }
+#cat-list row:hover { background-color: #2d2d2d; color: #e0e0e0; }
+#cat-list row:selected,
+#cat-list row:selected:focus { background-color: #243624; color: #8ab87a; }
+
+#app-area { background-color: #1e1e1e; padding: 6px; }
+
+flowboxchild { border-radius: 8px; }
+flowboxchild:focus { outline: none; }
+
+.app-btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 6px;
+    min-width: 108px;
+    min-height: 90px;
+}
+.app-btn:hover { background-color: #2d2d2d; }
+.app-btn:active { background-color: #3a4a3a; }
+.app-label { color: #e0e0e0; font-size: 11px; }
+
+#bottom-bar {
+    background-color: #252525;
+    border-top: 1px solid #333333;
+    padding: 5px 10px;
+}
+.act-btn {
+    background: transparent;
+    color: #aaaaaa;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 14px;
+}
+.act-btn:hover { background-color: #2d2d2d; color: #e0e0e0; }
+.power-btn:hover { background-color: rgba(242,139,130,0.15); color: #f28b82; }
+"""
+
+# Category key → (display label, icon char)
+CATS = [
+    ('All',         'All Apps',    '⊞'),
+    ('Network',     'Internet',    '🌐'),
+    ('Office',      'Office',      '📄'),
+    ('AudioVideo',  'Media',       '🎵'),
+    ('Graphics',    'Graphics',    '🖼'),
+    ('Development', 'Development', '⚙'),
+    ('Game',        'Games',       '🎮'),
+    ('System',      'System',      '🖥'),
+    ('Settings',    'Settings',    '⚙'),
+    ('Utility',     'Utilities',   '🔧'),
+    ('Other',       'Other',       '📦'),
+]
+CAT_ALIAS = {
+    'Audio': 'AudioVideo', 'Video': 'AudioVideo',
+    'Science': 'Utility', 'Education': 'Utility',
+}
+
+
+def parse_apps():
+    dirs = [
+        Path('/usr/share/applications'),
+        Path(os.environ.get('HOME', '/root')) / '.local/share/applications',
+    ]
+    seen, apps = set(), []
+    for d in dirs:
+        if not d.exists():
+            continue
+        for f in sorted(d.glob('*.desktop')):
+            if f.stem in seen:
+                continue
+            app = _parse(f)
+            if app:
+                seen.add(f.stem)
+                apps.append(app)
+    return sorted(apps, key=lambda a: a['name'].lower())
+
+
+def _parse(path):
+    cp = configparser.RawConfigParser()
+    try:
+        cp.read(str(path), encoding='utf-8')
+    except Exception:
+        return None
+    if not cp.has_section('Desktop Entry'):
+        return None
+    s = cp['Desktop Entry']
+    if s.get('Type', '') != 'Application':
+        return None
+    if s.get('NoDisplay', 'false').lower() == 'true':
+        return None
+    if s.get('Hidden', 'false').lower() == 'true':
+        return None
+    name = s.get('Name', '').strip()
+    exec_ = s.get('Exec', '').strip()
+    if not name or not exec_:
+        return None
+    raw_cats = [c for c in s.get('Categories', '').rstrip(';').split(';') if c]
+    cats = list({CAT_ALIAS.get(c, c) for c in raw_cats})
+    terminal = s.get('Terminal', 'false').lower() == 'true'
+    return {'name': name, 'exec': exec_, 'icon': s.get('Icon', ''), 'cats': cats, 'terminal': terminal}
+
+
+def _clean_exec(e):
+    return re.sub(r'%[a-zA-Z]', '', e).strip()
+
+
+def _load_icon(name, size=48):
+    if not name:
+        return None
+    try:
+        if os.path.isabs(name) and os.path.exists(name):
+            return GdkPixbuf.Pixbuf.new_from_file_at_size(name, size, size)
+        theme = Gtk.IconTheme.get_default()
+        return theme.load_icon(name, size, Gtk.IconLookupFlags.FORCE_SIZE)
+    except Exception:
+        try:
+            return Gtk.IconTheme.get_default().load_icon(
+                'application-x-executable', size, Gtk.IconLookupFlags.FORCE_SIZE)
+        except Exception:
+            return None
+
+
+class VeloxLauncher(Gtk.Window):
+    def __init__(self):
+        super().__init__(title='Velox Launcher')
+        self.set_default_size(W, H)
+        self.set_resizable(False)
+        self.set_decorated(False)
+        self.set_skip_taskbar_hint(True)
+        self.set_keep_above(True)
+        self.set_type_hint(Gdk.WindowTypeHint.POPUP_MENU)
+
+        provider = Gtk.CssProvider()
+        provider.load_from_data(CSS)
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+        self._cat = 'All'
+        self._query = ''
+        self._apps = parse_apps()
+        self._build()
+        self.connect('key-press-event', self._on_key)
+        self.connect('focus-out-event', self._on_blur)
+
+    def _build(self):
+        root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.add(root)
+
+        # ── Search row ────────────────────────────────────────────────────────
+        sr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        sr.set_name('search-row')
+        # Velox logo left of search
+        logo = _load_icon('/usr/share/pixmaps/velox-logo-cropped.png', 24)
+        if logo:
+            img = Gtk.Image.new_from_pixbuf(logo)
+            img.set_margin_start(4)
+            img.set_margin_end(4)
+            sr.pack_start(img, False, False, 0)
+        self._entry = Gtk.SearchEntry()
+        self._entry.set_placeholder_text('Search applications...')
+        self._entry.set_hexpand(True)
+        self._entry.connect('search-changed', lambda e: self._filter(e.get_text()))
+        sr.pack_start(self._entry, True, True, 0)
+        root.pack_start(sr, False, False, 0)
+
+        # ── Body: category sidebar + app grid ─────────────────────────────────
+        body = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        root.pack_start(body, True, True, 0)
+
+        # Sidebar
+        sb = Gtk.ScrolledWindow()
+        sb.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        sb.set_min_content_width(140)
+        sb.set_max_content_width(140)
+        self._catbox = Gtk.ListBox()
+        self._catbox.set_name('cat-list')
+        self._catbox.connect('row-selected', self._on_cat)
+        sb.add(self._catbox)
+        body.pack_start(sb, False, False, 0)
+
+        # App grid
+        gs = Gtk.ScrolledWindow()
+        gs.set_name('app-area')
+        gs.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        gs.set_hexpand(True)
+        gs.set_vexpand(True)
+        self._flow = Gtk.FlowBox()
+        self._flow.set_max_children_per_line(4)
+        self._flow.set_min_children_per_line(1)
+        self._flow.set_column_spacing(2)
+        self._flow.set_row_spacing(2)
+        self._flow.set_homogeneous(True)
+        self._flow.set_selection_mode(Gtk.SelectionMode.NONE)
+        gs.add(self._flow)
+        body.pack_start(gs, True, True, 0)
+
+        # ── Bottom bar ────────────────────────────────────────────────────────
+        bb = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        bb.set_name('bottom-bar')
+        pw = Gtk.Button(label='⏻  Power Off')
+        pw.get_style_context().add_class('act-btn')
+        pw.get_style_context().add_class('power-btn')
+        pw.connect('clicked', lambda _: self._run('xfce4-session-logout'))
+        bb.pack_start(pw, False, False, 0)
+        bb.pack_start(Gtk.Box(), True, True, 0)
+        sg = Gtk.Button(label='⚙  Settings')
+        sg.get_style_context().add_class('act-btn')
+        sg.connect('clicked', lambda _: self._run('xfce4-settings-manager'))
+        bb.pack_start(sg, False, False, 0)
+        root.pack_start(bb, False, False, 0)
+
+        self._fill_cats()
+        self._fill_apps()
+
+    def _fill_cats(self):
+        used = set()
+        for a in self._apps:
+            used.update(a['cats'])
+        first = None
+        for key, label, icon in CATS:
+            if key != 'All' and key not in used:
+                continue
+            row = Gtk.ListBoxRow()
+            row._cat = key
+            lbl = Gtk.Label(label=f'{icon}  {label}', xalign=0)
+            lbl.set_padding(6, 2)
+            row.add(lbl)
+            self._catbox.add(row)
+            if first is None:
+                first = row
+        if first:
+            self._catbox.select_row(first)
+
+    def _fill_apps(self):
+        for c in self._flow.get_children():
+            self._flow.remove(c)
+        q = self._query.lower()
+        for app in self._apps:
+            if q and q not in app['name'].lower():
+                continue
+            if self._cat != 'All' and self._cat not in app['cats']:
+                continue
+            self._flow.add(self._make_btn(app))
+        self._flow.show_all()
+
+    def _make_btn(self, app):
+        btn = Gtk.Button()
+        btn.get_style_context().add_class('app-btn')
+        btn.set_relief(Gtk.ReliefStyle.NONE)
+        vb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        vb.set_halign(Gtk.Align.CENTER)
+        pb = _load_icon(app['icon'], 48)
+        if pb:
+            vb.pack_start(Gtk.Image.new_from_pixbuf(pb), False, False, 0)
+        else:
+            vb.pack_start(Gtk.Image.new_from_icon_name(
+                'application-x-executable', Gtk.IconSize.DIALOG), False, False, 0)
+        lbl = Gtk.Label(label=app['name'])
+        lbl.get_style_context().add_class('app-label')
+        lbl.set_max_width_chars(12)
+        lbl.set_ellipsize(Pango.EllipsizeMode.END)
+        lbl.set_halign(Gtk.Align.CENTER)
+        vb.pack_start(lbl, False, False, 0)
+        btn.add(vb)
+        btn.connect('clicked', lambda _, a=app: self._launch(a))
+        return btn
+
+    def _launch(self, app):
+        cmd = _clean_exec(app['exec'])
+        if app.get('terminal'):
+            cmd = f'xfce4-terminal -e {shlex.quote(cmd)}'
+        subprocess.Popen(cmd, shell=True,
+                         start_new_session=True,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        self.destroy()
+
+    def _run(self, cmd):
+        subprocess.Popen(cmd, shell=True, start_new_session=True)
+        self.destroy()
+
+    def _filter(self, text):
+        self._query = text
+        self._fill_apps()
+
+    def _on_cat(self, lb, row):
+        if row:
+            self._cat = row._cat
+            self._fill_apps()
+
+    def _on_key(self, w, ev):
+        if ev.keyval == Gdk.KEY_Escape:
+            self.destroy()
+
+    def _on_blur(self, w, ev):
+        GLib.timeout_add(150, self.destroy)
+
+
+if __name__ == '__main__':
+    win = VeloxLauncher()
+    # Center attempt (works via XWayland; labwc rc.xml rule handles native Wayland)
+    scr = Gdk.Screen.get_default()
+    win.move(max(0, (scr.get_width() - W) // 2), max(0, (scr.get_height() - H) // 2))
+    win.show_all()
+    win.present()
+    Gtk.main()

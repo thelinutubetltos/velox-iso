@@ -2,7 +2,7 @@
 Name=Newaita-Velox
 Comment=Newaita with Velox green folders
 Inherits=Newaita
-Directories=places/16,places/22,places/24,places/32,places/48,places/64,places/16@2x,places/22@2x,places/24@2x,places/32@2x,places/48@2x,places/64@2x,apps/16,apps/22,apps/24,apps/32,apps/48,apps/64
+Directories=places/16,places/22,places/24,places/32,places/48,places/64,places/16@2x,places/22@2x,places/24@2x,places/32@2x,places/48@2x,places/64@2x,places/symbolic,apps/16,apps/22,apps/24,apps/32,apps/48,apps/64
 
 [places/16]
 Size=16
@@ -81,3 +81,10 @@ Type=Fixed
 [apps/64]
 Size=64
 Type=Fixed
+
+[places/symbolic]
+Size=48
+MinSize=16
+MaxSize=512
+Type=Scalable
+Context=Places

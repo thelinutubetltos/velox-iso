@@ -18,13 +18,13 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
 apply_settings() {
     gsettings set org.cinnamon.theme name 'Fluent-Velox-Dark'
     gsettings set org.cinnamon.desktop.wm.preferences theme 'Fluent-Velox-Dark'
-    gsettings set org.cinnamon.desktop.interface gtk-theme 'Fluent-grey-Dark'
+    gsettings set org.cinnamon.desktop.interface gtk-theme 'Fluent-Velox-Dark'
     gsettings set org.cinnamon.desktop.interface icon-theme 'Newaita-Velox'
-    gsettings set org.cinnamon.desktop.interface cursor-theme 'breeze_cursors'
+    gsettings set org.cinnamon.desktop.interface cursor-theme 'Adwaita'
     gsettings set org.cinnamon.desktop.interface font-name 'Noto Sans 11'
-    gsettings set org.gnome.desktop.interface gtk-theme 'Fluent-grey-Dark'
+    gsettings set org.gnome.desktop.interface gtk-theme 'Fluent-Velox-Dark'
     gsettings set org.gnome.desktop.interface icon-theme 'Newaita-Velox'
-    gsettings set org.gnome.desktop.interface cursor-theme 'breeze_cursors'
+    gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
     gsettings set org.gnome.desktop.interface font-name 'Noto Sans 11'
     gsettings set org.cinnamon favorite-apps \
         "['velox-control-center.desktop', 'nemo.desktop', 'xfce4-terminal.desktop', 'firefox.desktop']"
