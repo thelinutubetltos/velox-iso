@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# velox-bump — bump the Velox OS version
+#
+# Usage:
+#   velox-bump feature   — new feature added        (8.2.0 → 9.0.0)
+#   velox-bump fix       — fix/improvement to existing feature (8.2.0 → 8.3.0)
+#   velox-bump update    — maintenance/package updates only    (8.2.0 → 8.2.1)
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VERSION_FILE="$SCRIPT_DIR/VERSION"
+PROFILEDEF="$SCRIPT_DIR/archiso/profiledef.sh"
+
+if [[ $# -ne 1 ]] || [[ ! "$1" =~ ^(feature|fix|update)$ ]]; then
+    echo "Usage: velox-bump <feature|fix|update>"
+    echo ""
+    echo "  feature  — new feature added           (8.2.0 → 9.0.0)"
+    echo "  fix      — fix or improvement          (8.2.0 → 8.3.0)"
+    echo "  update   — maintenance/pkg updates     (8.2.0 → 8.2.1)"
+    exit 1
+fi
+
+TYPE="$1"
+
+# Read current version
+current=$(cat "$VERSION_FILE" | tr -d '[:space:]')
+IFS='.' read -r major minor patch <<< "$current"
+
+major=${major:-0}
+minor=${minor:-0}
+patch=${patch:-0}
+
+old_version="$major.$minor.$patch"
+
+case "$TYPE" in
+    feature)
+        major=$((major + 1))
+        minor=0
+        patch=0
+        ;;
+    fix)
+        minor=$((minor + 1))
+        patch=0
+        ;;
+    update)
+        patch=$((patch + 1))
+        ;;
+esac
+
+new_version="$major.$minor.$patch"
+
+# Write new version to VERSION file
+echo "$new_version" > "$VERSION_FILE"
+
+# Update profiledef.sh iso_version
+sed -i "s/^iso_version=.*/iso_version=\"v${new_version}\"/" "$PROFILEDEF"
+
+echo "Velox version bumped: $old_version → $new_version  ($TYPE)"
+echo "Updated: VERSION, archiso/profiledef.sh"

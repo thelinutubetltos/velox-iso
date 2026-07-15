@@ -388,4 +388,4 @@ alias pamac-unlock="sudo rm /var/tmp/pamac/dbs/db.lock"
 [[ -f ~/.bashrc-personal ]] && . ~/.bashrc-personal
 
 # reporting tools - leave this in for ATT
-#fastfetch
+fastfetch

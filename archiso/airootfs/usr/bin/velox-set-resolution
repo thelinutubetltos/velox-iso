@@ -7,12 +7,15 @@ def log(msg):
     with open(LOG, 'a') as f:
         f.write(f"{time.strftime('%H:%M:%S')} {msg}\n")
 
+force = '--force' in sys.argv
+
 done_flag = Path(os.environ.get("HOME", "/root")) / ".config/velox-resolution-configured"
 done_flag.parent.mkdir(parents=True, exist_ok=True)
 try:
     open(done_flag, 'x').close()  # atomic exclusive create — second instance exits here
 except FileExistsError:
-    sys.exit(0)
+    if not force:
+        sys.exit(0)
 
 log(f"starting, DISPLAY={os.environ.get('DISPLAY')}, WAYLAND_DISPLAY={os.environ.get('WAYLAND_DISPLAY')}")
 
@@ -272,6 +275,51 @@ def is_kde_wayland():
             bool(os.environ.get('WAYLAND_DISPLAY')))
 
 
+def is_xfce_wayland():
+    desktop = os.environ.get('XDG_CURRENT_DESKTOP', '').upper()
+    return ('XFCE' in desktop) and bool(os.environ.get('WAYLAND_DISPLAY'))
+
+
+def get_wlrrandr_info():
+    try:
+        raw = subprocess.check_output(['wlr-randr'], text=True, stderr=subprocess.DEVNULL)
+        output_name, resolutions, current_res = None, [], None
+        in_modes = False
+        for line in raw.splitlines():
+            if line and not line[0].isspace():
+                output_name = line.split()[0]
+                in_modes = False
+                continue
+            stripped = line.strip()
+            if stripped.startswith('Modes:'):
+                in_modes = True
+                continue
+            if in_modes and stripped:
+                if not stripped[0].isdigit():
+                    in_modes = False
+                    continue
+                m = re.match(r'(\d+x\d+)\s+(?:px,\s*)?(?:@\s*)?[\d.]+\s+Hz(.*)$', stripped)
+                if m:
+                    res, flags = m.group(1), m.group(2)
+                    if res not in resolutions:
+                        resolutions.append(res)
+                    if 'current' in flags:
+                        current_res = res
+        log(f"wlr-randr: output={output_name}, current={current_res}, modes={resolutions[:6]}")
+        return output_name, resolutions, current_res
+    except Exception as e:
+        log(f"wlr-randr failed: {e}")
+        return None, [], None
+
+
+def apply_via_wlrrandr(output_name, target_res):
+    cmd = ['wlr-randr', '--output', output_name, '--mode', target_res]
+    log(f"wlr-randr: running {' '.join(cmd)}")
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    log(f"wlr-randr: rc={r.returncode} {r.stderr.strip()}")
+    return r.returncode == 0
+
+
 def strip_ansi(text):
     return re.sub(r'\x1b\[[0-9;]*m', '', text)
 
@@ -361,6 +409,7 @@ def main():
 
     proxy, muffin_info = None, None
     kscreen_output, kscreen_uuid, kscreen_current, kscreen_resolutions, kscreen_mode_map = None, None, None, [], {}
+    wlr_output, wlr_resolutions, wlr_current = None, [], None
     xoutput = None
 
     if is_kde_wayland():
@@ -368,6 +417,11 @@ def main():
         kscreen_output, kscreen_uuid, kscreen_current, kscreen_resolutions, kscreen_mode_map = get_kscreen_info()
         resolutions = kscreen_resolutions
         current_res = kscreen_current
+    elif is_xfce_wayland():
+        log("XFCE Wayland session — using wlr-randr")
+        wlr_output, wlr_resolutions, wlr_current = get_wlrrandr_info()
+        resolutions = wlr_resolutions
+        current_res = wlr_current
     elif is_cinnamon_running():
         log("Cinnamon session — using Muffin D-Bus")
         for attempt in range(4):
@@ -401,7 +455,8 @@ def main():
         done_flag.touch()
         return
 
-    if target == current_res and not is_kde_wayland():
+    skip_if_current = not is_kde_wayland() and not is_xfce_wayland()
+    if target == current_res and skip_if_current:
         log(f"already at best resolution {target}, nothing to do")
         done_flag.touch()
         return
@@ -410,7 +465,7 @@ def main():
 
     if show_resolution_dialog(target, env):
         log("user clicked Apply")
-        if not is_kde_wayland():
+        if is_cinnamon_running():
             subprocess.run(['gsettings', 'set', 'org.cinnamon.desktop.background',
                             'picture-options', 'zoom'], env=env, stderr=subprocess.DEVNULL)
         applied = False
@@ -418,6 +473,8 @@ def main():
             applied = apply_via_kscreen(kscreen_output, kscreen_mode_map, target)
             if applied and kscreen_uuid:
                 write_kwinoutputconfig(kscreen_uuid, target, kscreen_mode_map)
+        if not applied and wlr_output:
+            applied = apply_via_wlrrandr(wlr_output, target)
         if not applied and proxy and muffin_info:
             applied = apply_via_muffin(proxy, muffin_info, target)
         if not applied and xoutput:

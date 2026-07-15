@@ -1,0 +1,7 @@
+[Unit]
+Description=Velox Update Notifier
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/velox-update-notifier

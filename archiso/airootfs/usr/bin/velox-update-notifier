@@ -1,0 +1,45 @@
+#!/bin/bash
+# velox-update-notifier — check for system updates and send a desktop notification
+
+ICON="/usr/share/pixmaps/velox.png"
+STATE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/velox-update-notifier.last"
+
+# Check pacman/AUR updates via checkupdates (no root, no db lock)
+pacman_count=0
+if command -v checkupdates &>/dev/null; then
+    pacman_count=$(checkupdates 2>/dev/null | wc -l)
+fi
+
+# Check flatpak updates
+flatpak_count=0
+if command -v flatpak &>/dev/null; then
+    flatpak_count=$(flatpak remote-ls --updates --app 2>/dev/null | wc -l)
+fi
+
+total=$((pacman_count + flatpak_count))
+
+# Read last notified count to avoid repeating the same notification
+last_count=-1
+[ -f "$STATE_FILE" ] && last_count=$(cat "$STATE_FILE" 2>/dev/null)
+
+if [ "$total" -gt 0 ] && [ "$total" -ne "$last_count" ]; then
+    echo "$total" > "$STATE_FILE"
+
+    if [ "$pacman_count" -gt 0 ] && [ "$flatpak_count" -gt 0 ]; then
+        body="${pacman_count} system + ${flatpak_count} Flatpak updates available."
+    elif [ "$pacman_count" -gt 0 ]; then
+        [ "$pacman_count" -eq 1 ] && body="1 system update available." || body="${pacman_count} system updates available."
+    else
+        [ "$flatpak_count" -eq 1 ] && body="1 Flatpak update available." || body="${flatpak_count} Flatpak updates available."
+    fi
+
+    notify-send \
+        --icon="$ICON" \
+        --urgency=normal \
+        --app-name="Velox" \
+        "Updates Available" \
+        "$body Open Velox Control Center to update."
+
+elif [ "$total" -eq 0 ]; then
+    rm -f "$STATE_FILE"
+fi
