@@ -274,6 +274,19 @@ strip_bloat() {
     log_info "Bloat stripping complete"
 }
 
+precache_large_packages() {
+    log_section "Phase 7c — Pre-caching large/chaotic-aur packages"
+    # Download these into the host pacman cache before mkarchiso runs.
+    # mkarchiso reuses /var/cache/pacman/pkg/ so these won't be re-downloaded
+    # during the build. Without this, intermittent chaotic-aur mirror issues
+    # can corrupt or fail large downloads mid-build.
+    local pkgs=(claude-code)
+    for pkg in "${pkgs[@]}"; do
+        log_info "Pre-caching: ${pkg}"
+        sudo pacman -Sw --noconfirm "${pkg}" || log_warn "Failed to pre-cache ${pkg} — build may still succeed if already cached"
+    done
+}
+
 build_iso() {
     log_section "Phase 8 — Running mkarchiso (this takes a while)"
     mkdir -p "${outFolder}"
@@ -316,6 +329,7 @@ main() {
 #    inject_nvidia_packages  # NVIDIA removed from live ISO — installed post-install via install.sh
     stamp_build_date
 #    strip_bloat
+    precache_large_packages
     build_iso
     create_checksums
 

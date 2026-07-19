@@ -5,4 +5,5 @@ Comment=Wayland dock
 Exec=crystal-dock
 Icon=crystal-dock
 StartupNotify=false
+OnlyShowIn=XFCE;
 X-GNOME-Autostart-enabled=true

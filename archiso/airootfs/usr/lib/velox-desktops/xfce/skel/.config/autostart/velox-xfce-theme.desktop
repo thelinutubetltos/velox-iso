@@ -4,4 +4,5 @@ Name=Velox XFCE Theme Init
 Exec=xfconf-query -c xsettings -p /Net/ThemeName -s "Fluent-grey-Dark"
 Terminal=false
 Hidden=false
+OnlyShowIn=XFCE;
 X-GNOME-Autostart-enabled=true

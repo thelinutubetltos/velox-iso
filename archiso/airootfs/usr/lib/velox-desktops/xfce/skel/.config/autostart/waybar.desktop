@@ -5,4 +5,5 @@ Comment=Wayland bar
 Exec=env GTK_THEME=Fluent-grey-Dark GDK_GL=disabled GDK_BACKEND=wayland waybar
 Icon=waybar
 StartupNotify=false
+OnlyShowIn=XFCE;
 X-GNOME-Autostart-enabled=true

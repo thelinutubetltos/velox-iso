@@ -28,7 +28,6 @@
     - plasma6-applets-panel-colorizer
     - candy-icons-git
     - fastfetch-git
-    - spotify
 
 - name: "Cinnamon"
   description: "Cinnamon desktop with Fluent Velox Dark theme"
@@ -54,7 +53,6 @@
     - fluent-gtk-theme-git
     - newaita-icons-git
     - fastfetch-git
-    - spotify
 
 - name: "XFCE"
   description: "XFCE desktop with Wayland support via labwc and waybar"
@@ -87,4 +85,3 @@
     - fluent-gtk-theme-git
     - newaita-icons-git
     - fastfetch-git
-    - spotify

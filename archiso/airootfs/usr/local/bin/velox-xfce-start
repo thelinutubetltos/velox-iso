@@ -1,0 +1,6 @@
+#!/bin/bash
+# Velox XFCE session starter — sets XDG_CURRENT_DESKTOP so xfce4-session
+# correctly filters OnlyShowIn entries in ~/.config/autostart/*.desktop.
+# SDDM in x11 mode does not propagate DesktopNames from the session file.
+export XDG_CURRENT_DESKTOP=XFCE
+exec startxfce4 --wayland

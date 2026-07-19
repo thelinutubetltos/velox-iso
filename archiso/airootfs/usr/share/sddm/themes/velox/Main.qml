@@ -162,6 +162,16 @@ Rectangle {
                 }
             }
 
+            // Error message
+            Text {
+                id: errorText
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: ""
+                color: "#ff6b6b"
+                font.pixelSize: 13
+                visible: text.length > 0
+            }
+
             // Session switcher — left/right arrows, no popup
             Row {
                 width: parent.width
@@ -290,7 +300,17 @@ Rectangle {
         }
     }
 
+    Connections {
+        target: sddm
+        onLoginFailed: {
+            errorText.text = "Wrong password — please try again"
+            passwordInput.text = ""
+            passwordInput.forceActiveFocus()
+        }
+    }
+
     function doLogin() {
+        errorText.text = ""
         sddm.login(usernameInput.text, passwordInput.text, root.currentSessionIndex)
     }
 

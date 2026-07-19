@@ -1,0 +1,13 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Target = openbox
+Target = xfce4-session
+Target = labwc
+Target = cinnamon
+
+[Action]
+Description = Hiding extra SDDM session entries
+When = PostTransaction
+Exec = /bin/bash -c 'for f in /usr/share/xsessions/openbox.desktop /usr/share/xsessions/xfce.desktop /usr/share/xsessions/cinnamon2d.desktop /usr/share/wayland-sessions/xfce-wayland.desktop /usr/share/wayland-sessions/labwc.desktop /usr/share/wayland-sessions/cinnamon-wayland.desktop; do printf "[Desktop Entry]\nHidden=true\n" > "$f"; done'

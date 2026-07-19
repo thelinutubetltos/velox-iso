@@ -53,11 +53,11 @@ case "$DESKTOP" in
         SDDM_THEME="velox"
         ;;
     cinnamon)
-        SESSION="cinnamon-wayland"
+        SESSION="cinnamon"
         SDDM_THEME="velox"
         ;;
     xfce)
-        SESSION="xfce-wayland"
+        SESSION="velox-xfce"
         SDDM_THEME="velox"
         ;;
 esac
@@ -206,6 +206,21 @@ if [[ "$DESKTOP" == "xfce" ]]; then
     systemctl mask systemd-homed 2>/dev/null || true
     echo "Masked systemd-homed to prevent accounts-daemon startup delay"
 
+    # Create the velox-xfce session file — only present on XFCE installs so it
+    # doesn't appear in SDDM on KDE/Cinnamon systems.
+    mkdir -p /usr/share/wayland-sessions
+    cat > /usr/share/wayland-sessions/velox-xfce.desktop << 'DESKEOF'
+[Desktop Entry]
+Version=1.0
+Name=Velox XFCE
+Comment=Velox XFCE Wayland session with labwc compositor
+Exec=/usr/local/bin/velox-xfce-start
+Type=Application
+DesktopNames=XFCE
+Keywords=xfce;wayland;desktop;environment;session;
+DESKEOF
+    echo "Created /usr/share/wayland-sessions/velox-xfce.desktop"
+
     # GTK_THEME env var — most reliable way to force dark theme on Wayland.
     # settings.ini and gsettings are both ignored by GTK3 in this session setup.
     if grep -q '^GTK_THEME=' /etc/environment; then
@@ -317,3 +332,25 @@ SCHEMAEOF
         echo "Patched Newaita-Velox folder-desktop to Velox green"
     fi
 fi
+
+# Hide extra session files that ship with openbox/xfce4-session/labwc packages.
+# These are unpacked into the installed system via squashfs (unpackfs step) and must
+# be overwritten here so they don't appear in the SDDM session picker.
+# The pacman hook velox-hide-sessions.hook keeps them hidden after package upgrades.
+for _session in \
+    /usr/share/xsessions/openbox.desktop \
+    /usr/share/xsessions/xfce.desktop \
+    /usr/share/xsessions/cinnamon2d.desktop \
+    /usr/share/wayland-sessions/xfce-wayland.desktop \
+    /usr/share/wayland-sessions/labwc.desktop \
+    /usr/share/wayland-sessions/cinnamon-wayland.desktop; do
+    mkdir -p "$(dirname "$_session")"
+    printf '[Desktop Entry]\nHidden=true\n' > "$_session"
+done
+echo "Hidden extra SDDM session files (openbox, xfce, xfce-wayland, labwc)"
+
+# Install the pacman hook so future upgrades of openbox/xfce4-session/labwc
+# don't bring the session files back.
+mkdir -p /etc/pacman.d/hooks
+cp /usr/lib/velox-installer/velox-hide-sessions.hook /etc/pacman.d/hooks/
+echo "Installed velox-hide-sessions.hook"

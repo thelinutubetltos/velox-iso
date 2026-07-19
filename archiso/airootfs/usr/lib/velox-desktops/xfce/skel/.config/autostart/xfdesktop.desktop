@@ -4,4 +4,5 @@ Name=Xfdesktop
 Comment=XFCE desktop manager (no backdrop - swaybg handles wallpaper)
 Exec=bash -c 'sleep 2 && pkill xfdesktop; sleep 1 && GTK_THEME=Fluent-grey-Dark xfdesktop --disable-backdrop'
 StartupNotify=false
+OnlyShowIn=XFCE;
 X-GNOME-Autostart-enabled=true
