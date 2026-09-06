@@ -5,19 +5,39 @@
 #   velox-bump feature   — new feature added        (8.2.0 → 9.0.0)
 #   velox-bump fix       — fix/improvement to existing feature (8.2.0 → 8.3.0)
 #   velox-bump update    — maintenance/package updates only    (8.2.0 → 8.2.1)
+#   velox-bump lts       — LTS release, Alex-called only       (8.3.x → 8.4.0)
+#
+# Every bump also picks a new random codename. feature/fix/update draw from
+# the regular pool; lts draws from a separate, distinct pool so an LTS
+# release is never confusable with a routine bug-fix release at a glance.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSION_FILE="$SCRIPT_DIR/VERSION"
 PROFILEDEF="$SCRIPT_DIR/archiso/profiledef.sh"
+DEVREL="$SCRIPT_DIR/archiso/airootfs/etc/dev-rel"
 
-if [[ $# -ne 1 ]] || [[ ! "$1" =~ ^(feature|fix|update)$ ]]; then
-    echo "Usage: velox-bump <feature|fix|update>"
+REGULAR_CODENAMES=(
+    "Horny Rhino" "Feral Ferret" "Cranky Capybara" "Turbo Toucan"
+    "Rowdy Raccoon" "Zesty Zebu" "Greasy Gecko" "Jumpy Jackal"
+    "Salty Seahorse" "Wobbly Warthog" "Spicy Skink" "Grumpy Gnu"
+    "Sneaky Stoat" "Wired Wombat" "Chaotic Chinchilla" "Nimble Newt"
+)
+
+LTS_CODENAMES=(
+    "Granite Bison" "Iron Elephant" "Steadfast Buffalo" "Sovereign Stag"
+    "Bedrock Bear" "Ancient Tortoise" "Titan Ox" "Immovable Mammoth"
+    "Eternal Elk" "Monolith Moose" "Unshaken Yak" "Everest Bull"
+)
+
+if [[ $# -ne 1 ]] || [[ ! "$1" =~ ^(feature|fix|update|lts)$ ]]; then
+    echo "Usage: velox-bump <feature|fix|update|lts>"
     echo ""
     echo "  feature  — new feature added           (8.2.0 → 9.0.0)"
     echo "  fix      — fix or improvement          (8.2.0 → 8.3.0)"
     echo "  update   — maintenance/pkg updates     (8.2.0 → 8.2.1)"
+    echo "  lts      — LTS release, Alex-called only (8.3.x → 8.4.0)"
     exit 1
 fi
 
@@ -46,9 +66,20 @@ case "$TYPE" in
     update)
         patch=$((patch + 1))
         ;;
+    lts)
+        minor=$((minor + 1))
+        patch=0
+        ;;
 esac
 
 new_version="$major.$minor.$patch"
+
+if [[ "$TYPE" == "lts" ]]; then
+    pool=("${LTS_CODENAMES[@]}")
+else
+    pool=("${REGULAR_CODENAMES[@]}")
+fi
+codename="${pool[$((RANDOM % ${#pool[@]}))]}"
 
 # Write new version to VERSION file
 echo "$new_version" > "$VERSION_FILE"
@@ -56,5 +87,11 @@ echo "$new_version" > "$VERSION_FILE"
 # Update profiledef.sh iso_version
 sed -i "s/^iso_version=.*/iso_version=\"v${new_version}\"/" "$PROFILEDEF"
 
+# Update dev-rel codename
+if [[ -f "$DEVREL" ]]; then
+    sed -i "s/^ISO_CODENAME=.*/ISO_CODENAME=${codename}/" "$DEVREL"
+fi
+
 echo "Velox version bumped: $old_version → $new_version  ($TYPE)"
-echo "Updated: VERSION, archiso/profiledef.sh"
+echo "Codename: ${codename}"
+echo "Updated: VERSION, archiso/profiledef.sh, archiso/airootfs/etc/dev-rel"
