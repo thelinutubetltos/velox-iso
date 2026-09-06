@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = labwc
+
+[Action]
+Description = Remove standalone labwc session entry (bare compositor, not a real desktop choice)
+When = PostTransaction
+Exec = /bin/sh -c 'rm -f /usr/share/wayland-sessions/labwc.desktop'

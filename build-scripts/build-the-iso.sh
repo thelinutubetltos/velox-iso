@@ -82,7 +82,7 @@ trap 'on_error "$LINENO" "$BASH_COMMAND"' ERR
 # Build configuration — edit these before building
 #####################################################################
 desktop="kde/plasma"
-veloxVersion='v26.06.26'
+veloxVersion="v$(tr -d '[:space:]' < "${SCRIPT_DIR}/../VERSION")"   # always derived from VERSION file — never hardcode this
 nvidia_driver="open"          # open | 580xx | 390xx
 chaoticsrepo=true
 clean_pacman_cache="no"       # yes | no
@@ -248,11 +248,13 @@ inject_nvidia_packages() {
 }
 
 stamp_build_date() {
-    log_section "Phase 7 — Stamping build date"
+    log_section "Phase 7 — Stamping build date and release version"
     local date_build
     date_build=$(date -d now)
     echo "ISO build on: ${date_build}"
-    sudo sed -i "s/\(^ISO_BUILD=\).*/\1${date_build}/" "${buildFolder}/archiso/airootfs/etc/dev-rel"
+    local devrel="${buildFolder}/archiso/airootfs/etc/dev-rel"
+    sudo sed -i "s/\(^ISO_BUILD=\).*/\1${date_build}/" "${devrel}"
+    sudo sed -i "s/^ISO_RELEASE=.*/ISO_RELEASE=${veloxVersion}/" "${devrel}"
     clean_cache
 }
 

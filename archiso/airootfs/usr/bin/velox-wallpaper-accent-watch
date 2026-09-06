@@ -1,0 +1,50 @@
+#!/bin/bash
+# Keeps the panel accent color in sync with the current wallpaper.
+#
+# Purely event-based: reacts only to an explicit wallpaper change written
+# to the KDE config (Image=). Deliberately does NOT poll/screenshot the
+# desktop periodically -- an earlier version did, to also catch slideshow
+# rotation (which never writes its current frame back to the config), but
+# in practice that caused spurious recolors every few minutes from ordinary
+# screenshot noise (open windows, changing content) with no real wallpaper
+# change. Precision over slideshow coverage.
+set -u
+
+CONFIG_DIR="$HOME/.config"
+APPLETSRC="$CONFIG_DIR/plasma-org.kde.plasma.desktop-appletsrc"
+ACCENT_TOOL="/usr/bin/velox-wallpaper-accent"
+DEBOUNCE_SECONDS=1.5
+STATE_DIR="$HOME/.cache/velox-wallpaper-accent"
+LAST_COLOR_FILE="$STATE_DIR/last-color"
+LOCK_FILE="$STATE_DIR/apply.lock"
+
+mkdir -p "$STATE_DIR"
+touch "$LOCK_FILE"
+
+current_wallpaper() {
+    grep -m1 '^Image=' "$APPLETSRC" 2>/dev/null
+}
+
+flock "$LOCK_FILE" "$ACCENT_TOOL" --extract-only >"$LAST_COLOR_FILE" 2>/dev/null
+
+last="$(current_wallpaper)"
+inotifywait -m -e close_write -e moved_to -e create --format '%f' "$CONFIG_DIR" 2>/dev/null |
+while read -r changed_file; do
+    case "$changed_file" in
+        plasma-org.kde.plasma.desktop-appletsrc*) ;;
+        *) continue ;;
+    esac
+    now="$(current_wallpaper)"
+    [ "$now" = "$last" ] && continue
+    [ -z "$now" ] && continue
+    last="$now"
+
+    # Debounce: if another change lands before this settles, let that
+    # later iteration be the one that actually applies.
+    sleep "$DEBOUNCE_SECONDS"
+    latest="$(current_wallpaper)"
+    [ "$latest" != "$last" ] && continue
+
+    flock "$LOCK_FILE" "$ACCENT_TOOL"
+    flock "$LOCK_FILE" "$ACCENT_TOOL" --extract-only >"$LAST_COLOR_FILE" 2>/dev/null
+done

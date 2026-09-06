@@ -1,0 +1,12 @@
+[Unit]
+Description=Velox wallpaper accent color watcher
+After=plasma-plasmashell.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/velox-wallpaper-accent-watch
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=plasma-workspace.target

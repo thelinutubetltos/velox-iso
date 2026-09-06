@@ -1,0 +1,46 @@
+/* Velox green selection highlight for GTK3 — !important to override theme */
+
+menuitem:selected,
+menuitem:hover {
+    background-color: #243a20 !important;
+    color: #ffffff !important;
+}
+menuitem:selected label,
+menuitem:hover label {
+    color: #ffffff !important;
+}
+
+/* xfce4-settings-manager uses XfceIconView — CSS type name is xfceiconview, not iconview */
+xfceiconview.view:selected,
+xfceiconview.view:selected:focus,
+xfceiconview.view.cell:selected,
+xfceiconview.view.cell:selected:focus {
+    background-color: #243a20 !important;
+    color: #ffffff !important;
+}
+xfceiconview.view:selected:backdrop,
+xfceiconview.view.cell:selected:backdrop {
+    background-color: #1a2b16 !important;
+    color: rgba(255,255,255,0.75) !important;
+}
+xfceiconview.view:hover,
+xfceiconview.view.cell:hover {
+    background-color: rgba(36,58,32,0.35) !important;
+}
+
+row:selected,
+row:selected:focus,
+treeview.view row:selected,
+treeview.view row:selected:focus,
+.view row:selected,
+.view row:selected:focus {
+    background-color: #243a20 !important;
+    color: #ffffff !important;
+}
+row:selected label,
+treeview.view row:selected label {
+    color: #ffffff !important;
+}
+
+@define-color theme_selected_bg_color #243a20;
+@define-color theme_selected_fg_color #ffffff;

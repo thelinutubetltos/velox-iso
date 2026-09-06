@@ -1,0 +1,16 @@
+/* Velox green selection highlight for GTK4 */
+
+menuitem:selected,
+menuitem:hover {
+    background-color: #243a20;
+    color: #ffffff;
+}
+
+row:selected,
+.view row:selected {
+    background-color: #243a20;
+    color: #ffffff;
+}
+
+@define-color accent_bg_color #8ab87a;
+@define-color accent_color #8ab87a;

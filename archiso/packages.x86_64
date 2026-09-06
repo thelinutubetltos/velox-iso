@@ -345,6 +345,8 @@ calamares
 python-pyparted
 python-gobject
 python-pywal
+python-pillow
+inotify-tools
 fish
 alacritty
 poppler-glib
