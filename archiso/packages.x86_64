@@ -323,7 +323,6 @@ radiotray-ng
 
 pacman-hook-kernel-install
 speedtest-cli
-wttr
 
 ###########################################################################
 ####                           CHAOTIC AUR
