@@ -19,13 +19,14 @@ kwin4_effect_fadeEnabled=true
 kwin4_effect_loginEnabled=true
 kwin4_effect_logoutEnabled=true
 kwin4_effect_maximizeEnabled=true
+kwin4_effect_minimizeEnabled=true
 kwin4_effect_morphingpopupsEnabled=true
-kwin4_effect_squashEnabled=true
+kwin4_effect_squashEnabled=false
 kwin4_effect_slidingpopupsEnabled=true
 magiclampEnabled=false
 overviewEnabled=true
 slideEnabled=true
-wobblywindowsEnabled=true
+wobblywindowsEnabled=false
 zoomEnabled=true
 
 [Effect-blur]

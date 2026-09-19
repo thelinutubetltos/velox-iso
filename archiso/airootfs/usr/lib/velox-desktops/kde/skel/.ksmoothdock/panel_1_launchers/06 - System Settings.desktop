@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=systemsettings
+Exec=sh -c 'exec env -u QT_STYLE_OVERRIDE systemsettings'
 Icon=preferences-system
 Name=System Settings
 Terminal=false

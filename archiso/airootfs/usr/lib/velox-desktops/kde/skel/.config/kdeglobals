@@ -6,5 +6,6 @@ accentColorFromWallpaper=false
 Theme=Papirus-Dark
 
 [KDE]
+AnimationDurationFactor=0.15
 LookAndFeelPackage=leaf-dark
 widgetStyle=kvantum-dark
